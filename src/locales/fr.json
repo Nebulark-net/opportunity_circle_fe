@@ -1,0 +1,24 @@
+{
+  "common": {
+    "login": "Connexion",
+    "signup": "S'inscrire",
+    "logout": "Déconnexion",
+    "welcome": "Bienvenue",
+    "dashboard": "Tableau de bord",
+    "explore": "Explorer",
+    "saved": "Enregistré",
+    "applications": "Candidatures",
+    "profile": "Profil",
+    "resources": "Ressources",
+    "admin": "Admin",
+    "publisher": "Éditeur"
+  },
+  "auth": {
+    "signIn": "Se connecter",
+    "createAccount": "Créer un compte",
+    "fullName": "Nom complet",
+    "email": "Adresse e-mail",
+    "password": "Mot de passe",
+    "role": "Je suis un..."
+  }
+}

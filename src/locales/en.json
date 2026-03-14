@@ -1,0 +1,24 @@
+{
+  "common": {
+    "login": "Login",
+    "signup": "Sign Up",
+    "logout": "Logout",
+    "welcome": "Welcome",
+    "dashboard": "Dashboard",
+    "explore": "Explore",
+    "saved": "Saved",
+    "applications": "Applications",
+    "profile": "Profile",
+    "resources": "Resources",
+    "admin": "Admin",
+    "publisher": "Publisher"
+  },
+  "auth": {
+    "signIn": "Sign In",
+    "createAccount": "Create Account",
+    "fullName": "Full Name",
+    "email": "Email Address",
+    "password": "Password",
+    "role": "I am a..."
+  }
+}
