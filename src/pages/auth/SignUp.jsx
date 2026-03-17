@@ -22,6 +22,7 @@ const SignUp = () => {
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm({
     resolver: zodResolver(signupSchema),
@@ -29,6 +30,12 @@ const SignUp = () => {
       role: 'SEEKER',
     },
   });
+
+  const role = watch('role');
+
+  const handleOAuthRedirect = (provider) => {
+    window.location.href = `${import.meta.env.VITE_API_URL}/auth/${provider}?role=${role}`;
+  };
 
   const onSubmit = async (data) => {
     try {
@@ -123,7 +130,7 @@ const SignUp = () => {
         <Button
           variant="secondary"
           className="flex items-center justify-center gap-2"
-          onClick={() => window.location.href = `${import.meta.env.VITE_API_URL}/auth/google`}
+          onClick={() => handleOAuthRedirect('google')}
         >
           <img src="https://www.svgrepo.com/show/355037/google.svg" className="w-4 h-4" alt="Google" />
           Google
@@ -131,7 +138,7 @@ const SignUp = () => {
         <Button
           variant="secondary"
           className="flex items-center justify-center gap-2"
-          onClick={() => window.location.href = `${import.meta.env.VITE_API_URL}/auth/github`}
+          onClick={() => handleOAuthRedirect('github')}
         >
           <img src="https://www.svgrepo.com/show/512317/github-142.svg" className="w-4 h-4 dark:invert" alt="GitHub" />
           GitHub

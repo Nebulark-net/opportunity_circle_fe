@@ -14,7 +14,7 @@ const OAuthRoleSelection = () => {
   const handleSubmit = async () => {
     setIsSubmitting(true);
     try {
-      const response = await api.post('/auth/oauth-finalize-role', { role: selectedRole });
+      const response = await api.patch('/auth/me/role', { role: selectedRole });
       const updatedUser = response.data.data;
       
       updateProfile(updatedUser);
