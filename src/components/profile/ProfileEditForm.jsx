@@ -8,7 +8,7 @@ import Input from '../shared/Input';
 import api from '../../lib/api';
 
 const ProfileEditForm = ({ initialData, onCancel, onSuccess }) => {
-  const { setUser } = useAuthStore();
+  const { updateProfile } = useAuthStore();
   const [isUploading, setIsUploading] = useState(false);
   const [photoPreview, setPhotoPreview] = useState(initialData?.profilePhotoUrl || '');
 
@@ -36,7 +36,7 @@ const ProfileEditForm = ({ initialData, onCancel, onSuccess }) => {
     try {
       setIsUploading(true);
       const photoUrl = await uploadProfilePhoto(file);
-      setUser({ ...initialData, profilePhotoUrl: photoUrl });
+      updateProfile({ profilePhotoUrl: photoUrl });
       toast.success('Profile photo updated!');
     } catch (error) {
       toast.error('Failed to upload photo.');
@@ -49,7 +49,7 @@ const ProfileEditForm = ({ initialData, onCancel, onSuccess }) => {
     try {
       const response = await api.patch('/seekers/profile', formData);
       if (response.data.success) {
-        setUser(response.data.data);
+        updateProfile(response.data.data);
         toast.success('Profile updated successfully!');
         onSuccess && onSuccess();
       }

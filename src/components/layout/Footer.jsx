@@ -1,68 +1,45 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Rocket, Twitter, Linkedin, Github } from 'lucide-react';
-import MaxContainer from './MaxContainer';
 
 const Footer = () => {
-  return (
-    <footer className="bg-white dark:bg-surface-dark border-t border-slate-200 dark:border-border-dark py-12">
-      <MaxContainer>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
-          {/* Brand */}
-          <div className="col-span-1 md:col-span-1">
-            <Link to="/" className="flex items-center gap-2 font-bold text-xl text-slate-900 dark:text-white mb-4">
-              <div className="p-1.5 bg-primary rounded-lg text-white">
-                <Rocket size={20} />
-              </div>
-              <span>Saas</span>
-            </Link>
-            <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
-              Connecting ambitious talent with world-changing opportunities. Launch your career today.
-            </p>
-          </div>
-
-          {/* Links */}
-          <div>
-            <h3 className="font-semibold text-slate-900 dark:text-white mb-4">Platform</h3>
-            <ul className="space-y-2">
-              <li><Link to="/explore" className="text-slate-600 dark:text-slate-400 hover:text-primary text-sm">Browse Opportunities</Link></li>
-              <li><Link to="/publishers" className="text-slate-600 dark:text-slate-400 hover:text-primary text-sm">For Publishers</Link></li>
-              <li><Link to="/pricing" className="text-slate-600 dark:text-slate-400 hover:text-primary text-sm">Pricing</Link></li>
-            </ul>
-          </div>
-
-          <div>
-            <h3 className="font-semibold text-slate-900 dark:text-white mb-4">Company</h3>
-            <ul className="space-y-2">
-              <li><Link to="/about" className="text-slate-600 dark:text-slate-400 hover:text-primary text-sm">About Us</Link></li>
-              <li><Link to="/careers" className="text-slate-600 dark:text-slate-400 hover:text-primary text-sm">Careers</Link></li>
-              <li><Link to="/blog" className="text-slate-600 dark:text-slate-400 hover:text-primary text-sm">Blog</Link></li>
-            </ul>
-          </div>
-
-          <div>
-            <h3 className="font-semibold text-slate-900 dark:text-white mb-4">Legal</h3>
-            <ul className="space-y-2">
-              <li><Link to="/privacy" className="text-slate-600 dark:text-slate-400 hover:text-primary text-sm">Privacy Policy</Link></li>
-              <li><Link to="/terms" className="text-slate-600 dark:text-slate-400 hover:text-primary text-sm">Terms of Service</Link></li>
-            </ul>
-          </div>
-        </div>
-
-        <div className="pt-8 border-t border-slate-200 dark:border-border-dark flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-slate-500 dark:text-slate-400 text-sm">
-            © {new Date().getFullYear()} Saas Inc. All rights reserved.
-          </p>
-          
-          <div className="flex items-center gap-4">
-            <a href="#" className="text-slate-400 hover:text-primary transition-colors"><Twitter size={20} /></a>
-            <a href="#" className="text-slate-400 hover:text-primary transition-colors"><Linkedin size={20} /></a>
-            <a href="#" className="text-slate-400 hover:text-primary transition-colors"><Github size={20} /></a>
-          </div>
-        </div>
-      </MaxContainer>
-    </footer>
-  );
+    return (
+        <footer className="bg-slate-900 text-slate-400 py-12 px-6">
+            <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12">
+                <div className="col-span-1 md:col-span-2 flex flex-col gap-6">
+                    <div className="flex items-center gap-3 text-white">
+                        <div className="flex h-8 w-8 items-center justify-center rounded bg-primary text-white">
+                            <span className="material-symbols-outlined text-lg">auto_awesome</span>
+                        </div>
+                        <h2 className="text-lg font-bold">Opportunity Circle</h2>
+                    </div>
+                    <p className="max-w-sm leading-relaxed">
+                        Bridging the gap between ambitious talent and world-class opportunities. Our platform ensures that the best career paths are accessible to everyone, everywhere.
+                    </p>
+                </div>
+                <div className="flex flex-col gap-4">
+                    <h4 className="text-white font-bold">Platform</h4>
+                    <nav className="flex flex-col gap-2">
+                        <Link className="hover:text-primary transition-colors" to="/explore?type=scholarship">Scholarships</Link>
+                        <Link className="hover:text-primary transition-colors" to="/explore?type=internship">Internships</Link>
+                        <Link className="hover:text-primary transition-colors" to="/explore?type=fellowship">Fellowships</Link>
+                        <Link className="hover:text-primary transition-colors" to="/pricing">Pricing</Link>
+                    </nav>
+                </div>
+                <div className="flex flex-col gap-4">
+                    <h4 className="text-white font-bold">Support</h4>
+                    <nav className="flex flex-col gap-2">
+                        <Link className="hover:text-primary transition-colors" to="/contact">Help Center</Link>
+                        <Link className="hover:text-primary transition-colors" to="/contact">Contact Us</Link>
+                        <Link className="hover:text-primary transition-colors" to="/privacy">Privacy Policy</Link>
+                        <Link className="hover:text-primary transition-colors" to="/terms">Terms of Service</Link>
+                    </nav>
+                </div>
+            </div>
+            <div className="max-w-7xl mx-auto mt-12 pt-8 border-t border-slate-800 text-center text-xs">
+                © {new Date().getFullYear()} Opportunity Circle. Empowering the next generation of professionals.
+            </div>
+        </footer>
+    );
 };
 
 export default Footer;

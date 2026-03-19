@@ -1,18 +1,44 @@
 import React, { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useSearchParams } from 'react-router-dom';
 import { Search, ChevronRight, FileText, Download } from 'lucide-react';
-import api from '../../lib/api';
+import { publisherService } from '../../services/publisher.service';
+import { toast } from 'sonner';
 
 const ApplicantManagement = () => {
+  const [searchParams] = useSearchParams();
+  const opportunityId = searchParams.get('opportunityId');
   const [selectedApplicant, setSelectedApplicant] = useState(null);
+  const queryClient = useQueryClient();
   
   const { data: applicants, isLoading } = useQuery({
-    queryKey: ['publisher-applicants'],
+    queryKey: ['publisher-applicants', opportunityId],
     queryFn: async () => {
-      const response = await api.get('/publishers/applicants');
-      return response.data.data;
+      const response = opportunityId 
+        ? await publisherService.getOpportunityApplications(opportunityId)
+        : await publisherService.getAllApplicants();
+      return response.data;
     },
   });
+
+  const updateStatusMutation = useMutation({
+    mutationFn: ({ id, status }) => publisherService.updateApplicationStatus(id, status),
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries(['publisher-applicants']);
+      toast.success(`Protocol status updated to ${variables.status}`);
+      // Update local state if selected
+      if (selectedApplicant?._id === variables.id) {
+        setSelectedApplicant(prev => ({ ...prev, status: variables.status }));
+      }
+    },
+    onError: () => {
+      toast.error('Failed to update protocol status. System rejection.');
+    }
+  });
+
+  const handleStatusUpdate = (id, status) => {
+    updateStatusMutation.mutate({ id, status });
+  };
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -62,14 +88,18 @@ const ApplicantManagement = () => {
               >
                 <div className="flex items-start gap-4">
                   <div className="size-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold overflow-hidden">
-                    {app.seeker?.fullName?.charAt(0)}
+                    {app.userId?.profilePhotoUrl ? (
+                      <img src={app.userId.profilePhotoUrl} alt="" className="w-full h-full object-cover" />
+                    ) : (
+                      app.userId?.fullName?.charAt(0)
+                    )}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex justify-between items-center mb-1">
-                      <h3 className="font-bold text-slate-900 dark:text-white truncate">{app.seeker?.fullName}</h3>
-                      <span className="text-[10px] text-slate-400 font-bold uppercase">{new Date(app.createdAt).toLocaleDateString()}</span>
+                      <h3 className="font-bold text-slate-900 dark:text-white truncate">{app.userId?.fullName}</h3>
+                      <span className="text-[10px] text-slate-400 font-bold uppercase">{new Date(app.appliedAt).toLocaleDateString()}</span>
                     </div>
-                    <p className="text-xs text-slate-500 truncate">{app.opportunity?.title}</p>
+                    <p className="text-xs text-slate-500 truncate">{app.opportunityId?.title?.en || app.opportunityId?.title}</p>
                     <div className="mt-2">
                       <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-black uppercase ${getStatusColor(app.status)}`}>
                         {app.status}
@@ -100,17 +130,39 @@ const ApplicantManagement = () => {
             </button>
 
             <div className="flex flex-col items-center text-center gap-4">
-              <div className="size-24 rounded-full bg-primary/20 flex items-center justify-center text-3xl text-primary font-black shadow-xl">
-                {selectedApplicant.seeker?.fullName?.charAt(0)}
+              <div className="size-24 rounded-full bg-primary/20 flex items-center justify-center text-3xl text-primary font-black shadow-xl overflow-hidden">
+                {selectedApplicant.userId?.profilePhotoUrl ? (
+                  <img src={selectedApplicant.userId.profilePhotoUrl} alt="" className="w-full h-full object-cover" />
+                ) : (
+                  selectedApplicant.userId?.fullName?.charAt(0)
+                )}
               </div>
               <div>
-                <h2 className="text-2xl font-black text-slate-900 dark:text-white">{selectedApplicant.seeker?.fullName}</h2>
-                <p className="text-primary font-bold text-sm">{selectedApplicant.seeker?.email}</p>
+                <h2 className="text-2xl font-black text-slate-900 dark:text-white">{selectedApplicant.userId?.fullName}</h2>
+                <p className="text-primary font-bold text-sm">{selectedApplicant.userId?.email}</p>
               </div>
               <div className="flex gap-2">
-                <button className="px-4 py-2 bg-primary text-white text-xs font-black rounded-lg hover:opacity-90">Accept</button>
-                <button className="px-4 py-2 bg-slate-200 dark:bg-border-dark text-slate-700 dark:text-white text-xs font-black rounded-lg">Shortlist</button>
-                <button className="px-4 py-2 bg-rose-500/10 text-rose-500 text-xs font-black rounded-lg">Reject</button>
+                <button 
+                  onClick={() => handleStatusUpdate(selectedApplicant._id, 'ACCEPTED')}
+                  disabled={updateStatusMutation.isLoading}
+                  className="px-4 py-2 bg-primary text-white text-xs font-black rounded-lg hover:opacity-90 disabled:opacity-50"
+                >
+                  Accept
+                </button>
+                <button 
+                  onClick={() => handleStatusUpdate(selectedApplicant._id, 'UNDER_REVIEW')}
+                  disabled={updateStatusMutation.isLoading}
+                  className="px-4 py-2 bg-slate-200 dark:bg-border-dark text-slate-700 dark:text-white text-xs font-black rounded-lg disabled:opacity-50"
+                >
+                  Shortlist
+                </button>
+                <button 
+                  onClick={() => handleStatusUpdate(selectedApplicant._id, 'REJECTED')}
+                  disabled={updateStatusMutation.isLoading}
+                  className="px-4 py-2 bg-rose-500/10 text-rose-500 text-xs font-black rounded-lg disabled:opacity-50"
+                >
+                  Reject
+                </button>
               </div>
             </div>
 
@@ -120,29 +172,29 @@ const ApplicantManagement = () => {
               <div>
                 <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Application Answers</h3>
                 <div className="space-y-4">
-                  {selectedApplicant.answers?.map((ans, i) => (
-                    <div key={i}>
-                      <p className="text-[10px] text-slate-500 font-bold uppercase">{ans.question}</p>
-                      <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed mt-1">{ans.answer}</p>
-                    </div>
-                  ))}
+                  <div>
+                    <p className="text-[10px] text-slate-500 font-bold uppercase">Statement of Purpose / Notes</p>
+                    <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed mt-1">{selectedApplicant.notes || 'No statement provided.'}</p>
+                  </div>
                 </div>
               </div>
 
               <div>
                 <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Documents</h3>
-                {selectedApplicant.documents?.map((doc, i) => (
-                  <div key={i} className="bg-white dark:bg-background-dark p-3 rounded-lg flex items-center justify-between border border-slate-200 dark:border-border-dark hover:border-primary/50 cursor-pointer transition-all">
+                {selectedApplicant.resume && (
+                  <div className="bg-white dark:bg-background-dark p-3 rounded-lg flex items-center justify-between border border-slate-200 dark:border-border-dark hover:border-primary/50 cursor-pointer transition-all">
                     <div className="flex items-center gap-3 text-left">
                       <FileText className="text-primary size-5" />
                       <div className="flex flex-col">
-                        <span className="text-[11px] font-bold text-slate-900 dark:text-white truncate max-w-[200px]">{doc.split('/').pop()}</span>
+                        <span className="text-[11px] font-bold text-slate-900 dark:text-white truncate max-w-[200px]">Candidate_Resume.pdf</span>
                         <span className="text-[9px] text-slate-500 uppercase tracking-tighter">PDF Document</span>
                       </div>
                     </div>
-                    <Download className="text-slate-400 size-4" />
+                    <a href={selectedApplicant.resume} target="_blank" rel="noopener noreferrer">
+                      <Download className="text-slate-400 size-4" />
+                    </a>
                   </div>
-                ))}
+                )}
               </div>
             </div>
           </div>

@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import api from '../lib/api';
+import { onboardingService } from '../services/onboarding.service';
 
 export const useOnboardingStore = create(
   persist(
@@ -9,8 +9,9 @@ export const useOnboardingStore = create(
       data: {
         interests: [],
         preferences: {},
-        bio: '',
-        location: '',
+        fullName: '',
+        country: '',
+        education: '',
       },
 
       setStep: (step) => set({ currentStep: step }),
@@ -19,12 +20,33 @@ export const useOnboardingStore = create(
         data: { ...state.data, ...newData },
       })),
 
-      syncStep: async (step, stepData) => {
+      syncStep1: async (formData) => {
         try {
-          await api.post('/seekers/onboarding/step', { step: step + 1, data: stepData });
-          set({ currentStep: step + 1 });
+          await onboardingService.saveProfile(formData);
+          set({ currentStep: 2 });
         } catch (error) {
-          console.error('Failed to sync onboarding step:', error);
+          console.error('Step 1 sync failed:', error);
+          throw error;
+        }
+      },
+
+      syncStep2: async (interests) => {
+        try {
+          await onboardingService.saveStep({ interests });
+          set({ currentStep: 3 });
+        } catch (error) {
+          console.error('Step 2 sync failed:', error);
+          throw error;
+        }
+      },
+
+      syncStep3: async (preferences) => {
+        try {
+          await onboardingService.completeOnboarding({ preferences });
+          // Note: The UI might need a bit more here to mark it as done locally
+          set({ currentStep: 4 }); // Use 4 to mean "onboarding complete"
+        } catch (error) {
+          console.error('Step 3 sync failed:', error);
           throw error;
         }
       },
@@ -34,8 +56,9 @@ export const useOnboardingStore = create(
         data: {
           interests: [],
           preferences: {},
-          bio: '',
-          location: '',
+          fullName: '',
+          country: '',
+          education: '',
         },
       }),
     }),

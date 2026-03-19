@@ -1,57 +1,62 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useOnboardingStore } from '../../stores/onboardingStore';
-import Step1 from './Step1';
-import Step2 from './Step2';
-import Step3 from './Step3';
+import Welcome from './Welcome';
+import Interests from './Interests';
+import Preferences from './Preferences';
 
 const OnboardingFlow = () => {
-  const { currentStep } = useOnboardingStore();
+  const { currentStep, setStep, syncStep3 } = useOnboardingStore();
+  const { user } = useAuthStore();
+  const isPublisher = user?.role === 'PUBLISHER';
+
+  const handleContinue = async () => {
+    if (isPublisher && currentStep === 1) {
+      // For publishers, we skip seeker steps and complete onboarding
+      try {
+        await syncStep3({ isPublisherOnboarding: true });
+        // Store will set step to 4 which we handle below
+      } catch (error) {
+        console.error('Publisher onboarding completion failed');
+      }
+    } else {
+      setStep(currentStep + 1);
+    }
+  };
+
+  const handleBack = () => setStep(currentStep - 1);
 
   const renderStep = () => {
+    // If onboarding is completed (step 4), redirect to dashboard
+    if (currentStep >= 4) {
+      return <Navigate to={isPublisher ? "/publisher/dashboard" : "/dashboard/feed"} replace />;
+    }
+
     switch (currentStep) {
       case 1:
-        return <Step1 key="step1" />;
+        return <Welcome key="welcome" onContinue={handleContinue} />;
       case 2:
-        return <Step2 key="step2" />;
+        return <Interests key="interests" onContinue={handleContinue} onBack={handleBack} />;
       case 3:
-        return <Step3 key="step3" />;
+        return <Preferences key="preferences" onBack={handleBack} onContinue={handleContinue} />;
       default:
-        return <Step1 key="step1" />;
+        return <Welcome key="welcome" onContinue={handleContinue} />;
     }
   };
 
   return (
     <div className="min-h-screen bg-background-light dark:bg-background-dark flex flex-col items-center justify-center p-4">
-      <div className="w-full max-w-2xl bg-white dark:bg-surface-dark rounded-card shadow-2xl border border-slate-200 dark:border-border-dark overflow-hidden">
-        {/* Progress Bar */}
-        <div className="h-1.5 w-full bg-slate-100 dark:bg-slate-800">
-          <motion.div
-            className="h-full bg-primary"
-            initial={{ width: 0 }}
-            animate={{ width: `${(currentStep / 3) * 100}%` }}
-            transition={{ duration: 0.5 }}
-          />
-        </div>
-
-        <div className="p-8 md:p-12">
-          <AnimatePresence mode="wait">
+        <AnimatePresence mode="wait">
             <motion.div
-              key={currentStep}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.3 }}
+                key={currentStep}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.3 }}
             >
-              {renderStep()}
+                {renderStep()}
             </motion.div>
-          </AnimatePresence>
-        </div>
-      </div>
-      
-      <div className="mt-8 text-sm text-slate-500">
-        Step {currentStep} of 3
-      </div>
+        </AnimatePresence>
     </div>
   );
 };

@@ -1,188 +1,161 @@
-import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'sonner';
-import './index.css';
-import './lib/i18n';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+import { useAuthStore } from './stores/authStore';
 
 // Layouts
 import AuthLayout from './layouts/AuthLayout';
-import MainLayout from './layouts/MainLayout';
-import PublicLayout from './layouts/PublicLayout';
+import AppLayout from './layouts/AppLayout';
+import DashboardLayout from './pages/dashboard/Dashboard';
+import PublisherLayout from './layouts/PublisherLayout';
+import AdminLayout from './layouts/AdminLayout';
 
-// Pages
+// General Pages
 import HomePage from './pages/Home/index';
-import ExplorePage from './pages/Explore/index';
-import PublisherPage from './pages/Publishers/index';
-import About from './pages/About';
-import Contact from './pages/Contact';
-import FAQ from './pages/FAQ';
-import Login from './pages/auth/Login';
-import SignUp from './pages/auth/SignUp';
+import LoginPage from './pages/auth/Login';
+import RegisterPage from './pages/auth/Register';
 import ForgotPassword from './pages/auth/ForgotPassword';
 import ForgotPasswordConfirmation from './pages/auth/ForgotPasswordConfirmation';
 import ResetPassword from './pages/auth/ResetPassword';
 import OAuthCallback from './pages/auth/OAuthCallback';
 import OAuthRoleSelection from './pages/auth/OAuthRoleSelection';
-import OnboardingFlow from './pages/onboarding/OnboardingFlow';
-import OpportunityDetail from './pages/opportunities/OpportunityDetail';
-import SeekerDashboard from './pages/dashboard/SeekerDashboard';
-import SavedOpportunities from './pages/dashboard/SavedOpportunities';
-import MyApplications from './pages/dashboard/MyApplications';
-import ProfilePage from './pages/profile/ProfilePage';
+import OpportunityDetail from './pages/opportunity/OpportunityDetail';
+import Profile from './pages/profile/Profile';
+import Settings from './pages/settings/Settings';
+import PublishersPage from './pages/Publishers/PublishersPage';
+import ExplorePage from './pages/Explore/index';
+
+// Dashboard Pages
+import Feed from './pages/dashboard/Feed';
+import Applications from './pages/dashboard/MyApplications';
+import Saved from './pages/dashboard/SavedOpportunities';
 import Resources from './pages/Resources';
-import PublisherDashboard from './pages/publisher/PublisherDashboard';
-import PublisherListings from './pages/publisher/PublisherListings';
-import ApplicantManagement from './pages/publisher/ApplicantManagement';
-import CreateOpportunity from './pages/publisher/CreateOpportunity';
+import OnboardingFlow from './pages/onboarding/OnboardingFlow';
+
 import ModerationQueue from './pages/admin/ModerationQueue';
 
-// Components
-import EmailVerifyToast from './components/auth/EmailVerifyToast';
+// Publisher Pages
+import PublisherDashboard from './pages/publisher/PublisherDashboard';
+import CreateOpportunity from './pages/publisher/CreateOpportunity';
+import PublisherListings from './pages/publisher/PublisherListings';
+import ApplicantManagement from './pages/publisher/ApplicantManagement';
 
-// Stores
-import { useAuthStore } from './stores/authStore';
+// Initialize QueryClient
+const queryClient = new QueryClient();
 
-// Socket
-import { initSocket, disconnectSocket } from './lib/socket';
-
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: 1,
-      refetchOnWindowFocus: false,
-    },
-  },
-});
-
-const ProtectedRoute = ({ children, roles = [] }) => {
+function PrivateRoute({ children, role }) {
   const { isAuthenticated, user } = useAuthStore();
-  const location = useLocation();
-  
+
   if (!isAuthenticated) {
-    return <Navigate to="/login" state={{ from: location }} replace />;
-  }
-  
-  // Normalize roles to uppercase for comparison
-  const normalizedUserRole = user?.role?.toUpperCase();
-  const normalizedRoles = roles.map(r => r.toUpperCase());
-
-  if (roles.length > 0 && !normalizedRoles.includes(normalizedUserRole)) {
-    // Redirect to respective dashboard if role not authorized
-    const target = normalizedUserRole === 'PUBLISHER' ? '/publisher/dashboard' : '/dashboard';
-    return <Navigate to={target} replace />;
+    return <Navigate to="/login" />;
   }
 
-  // Onboarding check for seekers
-  if (normalizedUserRole === 'SEEKER' && !user?.onboardingCompleted && location.pathname !== '/onboarding') {
-    return <Navigate to="/onboarding" replace />;
+  // Ensure user object exists before checking role
+  if (!user) {
+    return <div className="min-h-screen flex items-center justify-center bg-slate-950">
+      <div className="animate-spin size-8 border-4 border-primary border-t-transparent rounded-full"></div>
+    </div>;
   }
-  
+
+  if (role) {
+    const userRole = user.role?.toUpperCase();
+    const requiredRole = role.toUpperCase();
+    
+    if (userRole !== requiredRole) {
+      console.warn(`Access Denied: Required ${requiredRole}, User has ${userRole}`);
+      // Redirect to appropriate dashboard based on actual role
+      if (userRole === 'PUBLISHER') return <Navigate to="/publisher/dashboard" />;
+      if (userRole === 'ADMIN') return <Navigate to="/admin/moderation" />;
+      return <Navigate to="/dashboard" />;
+    }
+  }
+
   return children;
-};
+}
 
 function App() {
-  const { isAuthenticated, token } = useAuthStore();
-
-  useEffect(() => {
-    if (isAuthenticated && token) {
-      initSocket();
-    } else {
-      disconnectSocket();
-    }
-  }, [isAuthenticated, token]);
-
   return (
-    <QueryClientProvider client={queryClient}>
+    <>
+      <Toaster position="bottom-right" richColors />
       <Router>
-        <EmailVerifyToast />
-        <Routes>
-          {/* Public Routes */}
-          <Route element={<PublicLayout />}>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/explore" element={<ExplorePage />} />
-            <Route path="/publishers" element={<PublisherPage />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/faq" element={<FAQ />} />
-          </Route>
+        <QueryClientProvider client={queryClient}>
+          <Routes>
+            <Route element={<AppLayout />}>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/opportunity/:id" element={<OpportunityDetail />} />
+              <Route path="/explore" element={<ExplorePage />} />
+              {/* Add the /publishers route */}
+              <Route path="/publishers" element={<PublishersPage />} />
+            </Route>
 
-          {/* Auth Routes */}
-          <Route element={<AuthLayout />}>
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<SignUp />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/forgot-password/confirmation" element={<ForgotPasswordConfirmation />} />
-            <Route path="/reset-password" element={<ResetPassword />} />
-            <Route path="/oauth-callback" element={<OAuthCallback />} />
-            <Route path="/oauth-role-selection" element={
-              <ProtectedRoute>
-                <OAuthRoleSelection />
-              </ProtectedRoute>
-            } />
-          </Route>
+            <Route element={<AuthLayout />}>
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/register" element={<RegisterPage />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/forgot-password-confirmation" element={<ForgotPasswordConfirmation />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
+              <Route path="/onboarding" element={<OnboardingFlow />} />
+              <Route path="/oauth-callback" element={<OAuthCallback />} />
+              <Route path="/oauth-role-selection" element={<OAuthRoleSelection />} />
+            </Route>
 
-          {/* Protected Routes */}
-          <Route 
-            element={
-              <ProtectedRoute>
-                <MainLayout />
-              </ProtectedRoute>
-            }
-          >
-            <Route path="/dashboard" element={<SeekerDashboard />} />
-            <Route path="/opportunities/:id" element={<OpportunityDetail />} />
-            <Route path="/resources" element={<Resources />} />
-            <Route path="/saved" element={<SavedOpportunities />} />
-            <Route path="/applications" element={<MyApplications />} />
-            <Route path="/profile" element={<ProfilePage />} />
+            <Route
+              path="/dashboard"
+              element={
+                <PrivateRoute role="SEEKER">
+                  <DashboardLayout />
+                </PrivateRoute>
+              }
+            >
+              <Route index element={<Navigate replace to="feed" />} />
+              <Route path="feed" element={<Feed type="all" />} />
+              <Route path="internships" element={<Feed type="internship" />} />
+              <Route path="scholarships" element={<Feed type="scholarship" />} />
+              <Route path="fellowships" element={<Feed type="fellowship" />} />
+              <Route path="workshops" element={<Feed type="workshop" />} />
+              <Route path="applications" element={<Applications />} />
+              <Route path="saved" element={<Saved />} />
+              <Route path="resources" element={<Resources />} />
+              <Route path="profile" element={<Profile />} />
+              <Route path="settings" element={<Settings />} />
+            </Route>
 
-            {/* Publisher Routes */}
-            <Route path="/publisher/dashboard" element={
-              <ProtectedRoute roles={['publisher', 'admin']}>
-                <PublisherDashboard />
-              </ProtectedRoute>
-            } />
-            <Route path="/publisher/listings" element={
-              <ProtectedRoute roles={['publisher', 'admin']}>
-                <PublisherListings />
-              </ProtectedRoute>
-            } />
-            <Route path="/publisher/applicants" element={
-              <ProtectedRoute roles={['publisher', 'admin']}>
-                <ApplicantManagement />
-              </ProtectedRoute>
-            } />
-            <Route path="/publisher/create" element={
-              <ProtectedRoute roles={['publisher', 'admin']}>
-                <CreateOpportunity />
-              </ProtectedRoute>
-            } />
+            <Route
+              path="/admin"
+              element={
+                <PrivateRoute role="ADMIN">
+                  <AdminLayout />
+                </PrivateRoute>
+              }
+            >
+              <Route index element={<Navigate replace to="moderation" />} />
+              <Route path="moderation" element={<ModerationQueue />} />
+            </Route>
 
-            {/* Admin Routes */}
-            <Route path="/admin/moderation" element={
-              <ProtectedRoute roles={['admin']}>
-                <ModerationQueue />
-              </ProtectedRoute>
-            } />
-          </Route>
+            <Route
+              path="/publisher"
+              element={
+                <PrivateRoute role="PUBLISHER">
+                  <PublisherLayout />
+                </PrivateRoute>
+              }
+            >
+              <Route index element={<Navigate replace to="dashboard" />} />
+              <Route path="dashboard" element={<PublisherDashboard />} />
+              <Route path="create" element={<CreateOpportunity />} />
+              <Route path="edit/:id" element={<CreateOpportunity />} />
+              <Route path="listings" element={<PublisherListings />} />
+              <Route path="applicants" element={<ApplicantManagement />} />
+              <Route path="profile" element={<Profile />} />
+              <Route path="settings" element={<Settings />} />
+            </Route>
 
-          {/* Onboarding */}
-          <Route 
-            path="/onboarding" 
-            element={
-              <ProtectedRoute>
-                <OnboardingFlow />
-              </ProtectedRoute>
-            } 
-          />
-
-          {/* Root Redirect */}
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
+          </Routes>
+        </QueryClientProvider>
       </Router>
-      <Toaster position="top-right" richColors />
-    </QueryClientProvider>
+    </>
   );
 }
 

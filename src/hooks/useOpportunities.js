@@ -1,5 +1,5 @@
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
-import api from '../lib/axios';
+import api from '../lib/api';
 
 const fetchOpportunities = async ({ queryKey }) => {
   const [_, { search, type, location, page, limit }] = queryKey;

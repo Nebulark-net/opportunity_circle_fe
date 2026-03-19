@@ -1,62 +1,45 @@
 import React from 'react';
 import { NavLink, Link } from 'react-router-dom';
-import { Menu, Rocket } from 'lucide-react';
-import useLayoutStore from '../../stores/layoutStore';
-import MaxContainer from './MaxContainer';
-import AuthButtons from './AuthButtons';
+import { useAuthStore } from '../../stores/authStore';
 
 const Header = () => {
-  const { openMobileMenu } = useLayoutStore();
+    const { isAuthenticated, user } = useAuthStore();
 
-  const navItems = [
-    { name: 'Home', path: '/' },
-    { name: 'Explore', path: '/explore' },
-    { name: 'For Publishers', path: '/publishers' },
-  ];
-
-  return (
-    <header className="sticky top-0 z-30 w-full bg-white/80 dark:bg-surface-dark/80 backdrop-blur-md border-b border-slate-200 dark:border-border-dark">
-      <MaxContainer className="h-16 flex items-center justify-between">
-        {/* Logo */}
-        <Link to="/" className="flex items-center gap-2 font-bold text-xl text-slate-900 dark:text-white">
-          <div className="p-1.5 bg-primary rounded-lg text-white shadow-sm">
-            <Rocket size={20} />
-          </div>
-          <span className="tracking-tight uppercase font-black">Saas</span>
-        </Link>
-
-        {/* Desktop Nav */}
-        <nav className="hidden md:flex items-center gap-8">
-          {navItems.map((item) => (
-            <NavLink
-              key={item.name}
-              to={item.path}
-              className={({ isActive }) =>
-                `text-sm font-bold transition-colors hover:text-primary ${
-                  isActive ? 'text-primary' : 'text-slate-600 dark:text-slate-300'
-                }`
-              }
-            >
-              {item.name}
-            </NavLink>
-          ))}
-        </nav>
-
-        {/* Actions */}
-        <div className="hidden md:flex items-center gap-4">
-          <AuthButtons />
-        </div>
-
-        {/* Mobile Menu Trigger */}
-        <button
-          onClick={openMobileMenu}
-          className="md:hidden p-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/10 rounded-lg transition-colors"
-        >
-          <Menu size={24} />
-        </button>
-      </MaxContainer>
-    </header>
-  );
+    return (
+        <header className="sticky top-0 z-50 w-full border-b border-slate-200 dark:border-surface-dark bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md">
+            <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+                <Link to="/" className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-white">
+                        <span className="material-symbols-outlined text-2xl">auto_awesome</span>
+                    </div>
+                    <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">Opportunity Circle</h2>
+                </Link>
+                <nav className="hidden md:flex items-center gap-10">
+                    <NavLink to="/explore" className={({isActive}) => `text-sm font-semibold transition-colors ${isActive ? 'text-primary' : 'text-slate-700 dark:text-slate-300 hover:text-primary'}`}>Explore</NavLink>
+                    <NavLink to="/publishers" className={({isActive}) => `text-sm font-semibold transition-colors ${isActive ? 'text-primary' : 'text-slate-700 dark:text-slate-300 hover:text-primary'}`}>For Publishers</NavLink>
+                </nav>
+                <div className="flex items-center gap-4">
+                    {isAuthenticated ? (
+                        <Link 
+                            to={user?.role === 'PUBLISHER' ? '/publisher/dashboard' : '/dashboard'} 
+                            className="px-5 py-2.5 bg-primary hover:bg-primary/90 text-white text-sm font-bold rounded-lg shadow-lg shadow-primary/20 transition-all"
+                        >
+                            Dashboard
+                        </Link>
+                    ) : (
+                        <>
+                            <Link to="/login" className="px-5 py-2 text-sm font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-surface-dark rounded-lg transition-all">
+                                Login
+                            </Link>
+                            <Link to="/signup" className="px-5 py-2.5 bg-primary hover:bg-primary/90 text-white text-sm font-bold rounded-lg shadow-lg shadow-primary/20 transition-all">
+                                Sign Up
+                            </Link>
+                        </>
+                    )}
+                </div>
+            </div>
+        </header>
+    );
 };
 
 export default Header;

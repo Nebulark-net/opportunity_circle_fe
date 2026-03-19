@@ -1,151 +1,230 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Plus, Users, Eye, CheckCircle, Activity, Award } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import Card from '../../components/shared/Card';
-import Button from '../../components/shared/Button';
-import StatCard from '../../components/dashboard/StatCard';
-import api from '../../lib/api';
+import { publisherService } from '../../services/publisher.service';
+
+import { motion } from 'framer-motion';
 
 const PublisherDashboard = () => {
+  const [activeTab, setActiveTab] = useState('All Listings');
+
   const { data: listingsData, isLoading: listingsLoading } = useQuery({
     queryKey: ['publisher-listings'],
-    queryFn: async () => {
-      const response = await api.get('/publishers/opportunities');
-      return response.data;
-    },
+    queryFn: () => publisherService.getOpportunities(),
   });
 
   const { data: statsData, isLoading: statsLoading } = useQuery({
     queryKey: ['publisher-stats'],
-    queryFn: async () => {
-      const response = await api.get('/publishers/dashboard/stats');
-      return response.data;
-    },
+    queryFn: () => publisherService.getStats(),
   });
 
   const listings = listingsData?.data?.opportunities || [];
   const stats = statsData?.data || {};
 
-  const statCards = [
-    { 
-      title: 'Engagement Rate', 
-      value: stats.engagementRate || 0, 
-      icon: Activity, 
-      description: 'Based on views & applicants' 
-    },
-    { 
-      title: 'Verified Programs', 
-      value: stats.verifiedProgramsCount || 0, 
-      icon: Award, 
-      description: 'Active programs from verified profile' 
-    },
-    { 
-      title: 'Active Listings', 
-      value: stats.activeListingsCount || 0, 
-      icon: Eye, 
-      description: 'Currently visible to seekers' 
-    },
-  ];
+  const tabs = ['All Listings', 'Active', 'Pending', 'Drafts', 'Expired'];
+
+  const filteredListings = listings.filter((listing) => {
+    if (activeTab === 'All Listings') return true;
+    if (activeTab === 'Active') return listing.status === 'ACTIVE';
+    if (activeTab === 'Pending') return listing.status === 'PENDING';
+    if (activeTab === 'Drafts') return listing.status === 'DRAFT';
+    if (activeTab === 'Expired') return listing.status === 'EXPIRED' || listing.status === 'CLOSED';
+    return true;
+  });
+
+  const containerVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: { duration: 0.6, staggerChildren: 0.1 }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 10 },
+    visible: { opacity: 1, y: 0 }
+  };
+
+  const getStatusBadge = (status) => {
+    const configs = {
+      ACTIVE: { bg: 'bg-emerald-500/10', text: 'text-emerald-500', label: 'Live' },
+      PENDING: { bg: 'bg-amber-500/10', text: 'text-amber-500', label: 'In Review' },
+      DRAFT: { bg: 'bg-slate-500/10', text: 'text-slate-500', label: 'Draft' },
+      EXPIRED: { bg: 'bg-rose-500/10', text: 'text-rose-500', label: 'Expired' },
+      CLOSED: { bg: 'bg-rose-500/10', text: 'text-rose-500', label: 'Closed' }
+    };
+    const config = configs[status] || { bg: 'bg-slate-500/10', text: 'text-slate-500', label: status };
+    return (
+      <span className={`px-2.5 py-1 rounded-md text-[10px] font-black uppercase tracking-wider ${config.bg} ${config.text}`}>
+        {config.label}
+      </span>
+    );
+  };
 
   return (
-    <div className="space-y-8">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-black text-slate-900 dark:text-white">Publisher Dashboard</h1>
-          <p className="text-slate-500">Manage your listings and track applicant progress.</p>
+    <motion.div 
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+      className="max-w-7xl mx-auto px-6 py-8 flex flex-col gap-10"
+    >
+      {/* Premium Header */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-slate-200 dark:border-slate-800 pb-8">
+        <div className="flex flex-col gap-2">
+          <h1 className="text-4xl font-black text-slate-900 dark:text-white tracking-tighter uppercase leading-none">Management Console</h1>
+          <p className="text-slate-500 dark:text-slate-400 font-medium text-lg">Orchestrate your early-career opportunities and track global impact.</p>
         </div>
-        <Link to="/publisher/create">
-          <Button className="flex items-center gap-2 px-6">
-            <Plus size={20} />
-            Post Opportunity
-          </Button>
+        <Link to="/publisher/create" className="flex items-center justify-center gap-3 rounded-2xl bg-primary px-8 py-4 text-white text-sm font-black uppercase tracking-widest hover:bg-primary/90 transition-all shadow-2xl shadow-primary/30 active:scale-95 whitespace-nowrap">
+          <span className="material-symbols-outlined font-black">add</span>
+          <span>Deploy Opportunity</span>
         </Link>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-        {statCards.map((stat) => (
-          <StatCard 
-            key={stat.title} 
-            {...stat} 
-            loading={statsLoading} 
-          />
+      {/* Industrial Stats Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {[
+          { label: 'Active Listings', value: stats.activeListingsCount || 0, accent: 'emerald', icon: 'check_circle', trend: 'Live' },
+          { label: 'Total Reach', value: stats.totalViews || 0, accent: 'blue', icon: 'visibility', trend: 'Views' },
+          { label: 'Engagement', value: `${stats.engagementRate || 0}%`, accent: 'primary', icon: 'ads_click', trend: 'Global' },
+          { label: 'Candidate Pool', value: stats.totalApplicants || 0, accent: 'purple', icon: 'groups', trend: 'Total' },
+        ].map((item, i) => (
+          <motion.div 
+            key={i}
+            variants={itemVariants}
+            className="group relative bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xl overflow-hidden"
+          >
+            <div className={`absolute top-0 right-0 p-4 opacity-5 group-hover:scale-110 transition-transform`}>
+              <span className="material-symbols-outlined text-6xl">{item.icon}</span>
+            </div>
+            <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-4">{item.label}</p>
+            <div className="flex items-baseline justify-between pt-2">
+              <h3 className="text-3xl font-black text-slate-900 dark:text-white tracking-tighter">{statsLoading ? '...' : item.value}</h3>
+              <span className={`text-[10px] font-black text-${item.accent}-500 uppercase bg-${item.accent}-500/5 px-2 py-0.5 rounded`}>{item.trend}</span>
+            </div>
+          </motion.div>
         ))}
       </div>
 
-      {/* Listings Table */}
-      <Card className="overflow-hidden p-0" hoverEffect={false}>
-        <div className="p-6 border-b border-slate-100 dark:border-border-dark flex justify-between items-center">
-          <h2 className="text-xl font-bold">Your Opportunities</h2>
-          <Link to="/publisher/listings">
-            <Button variant="ghost" className="text-xs">View All</Button>
-          </Link>
+      {/* Navigation & Listings Hub */}
+      <div className="flex flex-col gap-6">
+        <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800">
+          <div className="flex gap-10 overflow-x-auto no-scrollbar">
+            {tabs.map(tab => (
+              <button 
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`pb-4 px-1 text-xs font-black uppercase tracking-[0.15em] transition-all relative ${
+                  activeTab === tab 
+                    ? 'text-primary' 
+                    : 'text-slate-400 dark:text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
+                }`}
+              >
+                {tab}
+                {activeTab === tab && (
+                  <motion.div layoutId="tab-underline" className="absolute bottom-0 left-0 right-0 h-1 bg-primary rounded-t-full" />
+                )}
+              </button>
+            ))}
+          </div>
         </div>
-        
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-slate-50 dark:bg-slate-800/50">
-                <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-500">Opportunity</th>
-                <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-500">Status</th>
-                <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-500">Applicants</th>
-                <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-500">Posted On</th>
-                <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-500">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100 dark:divide-border-dark">
-              {listingsLoading ? (
-                <tr>
-                  <td colSpan="5" className="px-6 py-10 text-center animate-pulse text-slate-400">Loading your listings...</td>
+
+        {/* Professional Listings Table */}
+        <div className="bg-white dark:bg-slate-900 rounded-[32px] border border-slate-200 dark:border-slate-800 overflow-hidden shadow-2xl backdrop-blur-xl">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-slate-50/50 dark:bg-slate-800/30 border-b border-slate-200 dark:border-slate-800">
+                  <th className="px-8 py-5 text-[10px] font-black text-slate-500 uppercase tracking-widest">Listing Protocol</th>
+                  <th className="px-8 py-5 text-[10px] font-black text-slate-500 uppercase tracking-widest text-center">Engagement</th>
+                  <th className="px-8 py-5 text-[10px] font-black text-slate-500 uppercase tracking-widest text-center">Status</th>
+                  <th className="px-8 py-5 text-[10px] font-black text-slate-500 uppercase tracking-widest text-right">Actions</th>
                 </tr>
-              ) : listings.length > 0 ? (
-                listings.map((listing) => (
-                  <tr key={listing._id} className="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
-                    <td className="px-6 py-4">
-                      <p className="font-bold dark:text-white">{listing.title?.en || listing.title}</p>
-                      <p className="text-xs text-slate-500">{listing.type}</p>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase ${
-                        listing.status === 'ACTIVE' ? 'bg-green-100 text-green-600' : 
-                        listing.status === 'PENDING' ? 'bg-yellow-100 text-yellow-600' : 'bg-slate-100 text-slate-600'
-                      }`}>
-                        {listing.status}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-2">
-                        <Users size={16} className="text-slate-400" />
-                        <span className="font-bold">{listing.applicantCount || 0}</span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-sm text-slate-500">
-                      {new Date(listing.createdAt).toLocaleDateString()}
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex gap-2">
-                        <Link to={`/opportunities/${listing._id}`}>
-                          <Button variant="ghost" className="p-2">
-                            <Eye size={18} />
-                          </Button>
-                        </Link>
-                      </div>
+              </thead>
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                {listingsLoading ? (
+                  <tr>
+                    <td colSpan="4" className="px-8 py-20 text-center">
+                      <div className="animate-spin size-8 border-4 border-primary border-t-transparent rounded-full mx-auto"></div>
+                      <p className="mt-4 text-sm font-bold text-slate-500 uppercase tracking-widest">Initalizing Streams...</p>
                     </td>
                   </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="5" className="px-6 py-10 text-center text-slate-500">
-                    You haven't posted any opportunities yet.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+                ) : filteredListings.length > 0 ? (
+                  filteredListings.map((listing) => (
+                    <motion.tr 
+                      key={listing._id}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="group hover:bg-slate-50/50 dark:hover:bg-slate-800/20 transition-all"
+                    >
+                      <td className="px-8 py-6">
+                        <div className="flex items-center gap-4">
+                          <div className="size-14 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center overflow-hidden shrink-0 border border-slate-200 dark:border-slate-700 group-hover:border-primary/50 transition-colors shadow-sm">
+                            {listing.coverImage ? (
+                               <img src={listing.coverImage} alt={listing.title} className="w-full h-full object-cover" />
+                            ) : (
+                               <span className="material-symbols-outlined text-slate-400 text-2xl">{listing.type === 'SCHOLARSHIP' ? 'school' : 'work'}</span>
+                            )}
+                          </div>
+                          <div className="flex flex-col gap-0.5">
+                            <p className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-tight line-clamp-1">{listing.title?.en || listing.title}</p>
+                            <div className="flex items-center gap-3">
+                              <span className="text-[10px] font-bold text-primary px-1.5 py-0.5 bg-primary/5 rounded border border-primary/10 uppercase">{listing.type}</span>
+                              <span className="text-[10px] font-medium text-slate-500">{new Date(listing.createdAt).toLocaleDateString()}</span>
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-8 py-6">
+                        <div className="flex flex-col items-center gap-1">
+                          <div className="flex items-center gap-4">
+                            <div className="flex flex-col items-center">
+                              <span className="text-xs font-black text-slate-900 dark:text-white">{listing.views || 0}</span>
+                              <span className="text-[9px] font-bold text-slate-400 uppercase">Views</span>
+                            </div>
+                            <div className="w-[1px] h-6 bg-slate-200 dark:bg-slate-700"></div>
+                            <div className="flex flex-col items-center">
+                              <span className="text-xs font-black text-emerald-500">{listing.applicantCount || 0}</span>
+                              <span className="text-[9px] font-bold text-slate-400 uppercase">Applied</span>
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-8 py-6 text-center">
+                        {getStatusBadge(listing.status)}
+                      </td>
+                      <td className="px-8 py-6 text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          <Link to={`/opportunity/${listing._id}`} className="size-10 rounded-xl flex items-center justify-center text-slate-400 hover:text-primary hover:bg-primary/10 transition-all">
+                            <span className="material-symbols-outlined text-[20px]">visibility</span>
+                          </Link>
+                          <Link to={`/publisher/edit/${listing._id}`} className="size-10 rounded-xl flex items-center justify-center text-slate-400 hover:text-emerald-500 hover:bg-emerald-500/10 transition-all">
+                            <span className="material-symbols-outlined text-[20px]">edit</span>
+                          </Link>
+                        </div>
+                      </td>
+                    </motion.tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="4" className="px-8 py-32 text-center">
+                      <div className="size-20 bg-slate-100 dark:bg-slate-800 rounded-3xl flex items-center justify-center mx-auto mb-6">
+                        <span className="material-symbols-outlined text-4xl text-slate-300">inventory_2</span>
+                      </div>
+                      <h3 className="text-xl font-black text-slate-900 dark:text-white uppercase tracking-tighter">No Protocols Detected</h3>
+                      <p className="text-slate-500 dark:text-slate-400 mt-2 max-w-xs mx-auto text-sm">You haven't deployed any opportunities under the {activeTab} category yet.</p>
+                      <Link to="/publisher/create" className="mt-8 inline-flex items-center gap-2 text-primary font-black uppercase text-xs tracking-widest hover:gap-4 transition-all">
+                        Deploy first listing <span className="material-symbols-outlined">arrow_forward</span>
+                      </Link>
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
-      </Card>
-    </div>
+      </div>
+    </motion.div>
   );
 };
 

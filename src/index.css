@@ -4,13 +4,14 @@
   --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 
   /* Brand Colors - From DESIGN.md */
-  --color-primary: #13a4ec;
-  --color-accent-teal: #13ecda;
-  --color-background-dark: #101c22;
-  --color-surface-dark: #1a2a33;
-  --color-border-dark: #233c48;
-  --color-background-light: #f6f7f8;
-  --color-muted-steel: #92b7c9;
+  --color-primary: #00A795;       /* Vibrant Teal */
+  --color-background-dark: #1A1A1A; /* Deep Charcoal */
+  --color-surface-dark: #2A2A2A;   /* Dark Gray */
+  --color-border-dark: #3A3A3A;    /* Medium Gray */
+  --color-off-white: #F5F5F5;      /* Primary Text */
+  --color-light-gray: #A0A0A0;     /* Secondary Text */
+  --color-success: #28A745;
+  --color-error: #DC3545;
 
   /* Spacing & Radius */
   --radius-button: 0.375rem;
@@ -27,7 +28,7 @@
   }
 
   body {
-    @apply bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-sans antialiased;
+    @apply bg-off-white dark:bg-background-dark text-background-dark dark:text-off-white font-sans antialiased;
   }
 
   /* Custom Scrollbar */
@@ -38,25 +39,25 @@
     @apply bg-transparent;
   }
   ::-webkit-scrollbar-thumb {
-    @apply bg-muted-steel/30 rounded-full hover:bg-muted-steel/50;
+    @apply bg-light-gray/30 rounded-full hover:bg-light-gray/50;
   }
 }
 
 @layer components {
   .btn-primary {
-    @apply bg-primary text-white font-bold py-1.5 px-4 rounded-button shadow-sm hover:opacity-90 transition-all active:scale-95 text-sm;
+    @apply bg-primary text-off-white font-bold py-1.5 px-4 rounded-button shadow-sm hover:opacity-90 transition-all active:scale-95 text-sm;
   }
   
   .btn-secondary {
-    @apply bg-surface-dark/10 dark:bg-surface-dark text-slate-900 dark:text-white font-bold py-1.5 px-4 rounded-button hover:bg-surface-dark/20 dark:hover:bg-slate-700 transition-all text-sm;
+    @apply bg-surface-dark/10 dark:bg-surface-dark text-background-dark dark:text-off-white font-bold py-1.5 px-4 rounded-button hover:bg-surface-dark/20 dark:hover:bg-slate-700 transition-all text-sm;
   }
 
   .card {
-    @apply bg-white dark:bg-surface-dark border border-slate-200 dark:border-border-dark rounded-card p-5 shadow-sm hover:shadow-md transition-all;
+    @apply bg-off-white dark:bg-surface-dark border border-border-dark/20 dark:border-border-dark rounded-card p-5 shadow-sm hover:shadow-md transition-all;
   }
 
   .input-field {
-    @apply w-full bg-slate-50 dark:bg-surface-dark/50 border border-slate-200 dark:border-border-dark rounded-button px-3 py-1.5 focus:ring-2 focus:ring-primary/20 focus:outline-none transition-all text-sm;
+    @apply w-full bg-off-white dark:bg-surface-dark/50 border border-border-dark/20 dark:border-border-dark rounded-button px-3 py-1.5 focus:ring-2 focus:ring-primary/20 focus:outline-none transition-all text-sm text-background-dark dark:text-off-white placeholder:text-light-gray;
   }
 }
 

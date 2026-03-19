@@ -1,62 +1,71 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import api from '../../lib/api';
+import { Link } from 'react-router-dom';
+import OpportunityCard from '../../components/dashboard/OpportunityCard';
 
 const SavedOpportunities = () => {
-  const { data, isLoading, error } = useQuery({
-    queryKey: ['saved-opportunities'],
-    queryFn: async () => {
-      const response = await api.get('/seekers/saved');
-      return response.data.data;
-    },
-  });
+    const { data, isLoading, error } = useQuery({
+        queryKey: ['saved-opportunities'],
+        queryFn: async () => {
+            const response = await api.get('/seekers/saved-items');
+            return response.data.data || [];
+        },
+    });
 
-  if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="text-center py-20">
-        <p className="text-red-500">Failed to load saved opportunities. Please try again.</p>
-      </div>
-    );
-  }
-
-  return (
-    <div className="space-y-8">
-      <div className="flex flex-col gap-1">
-        <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">Saved Opportunities</h1>
-        <p className="text-slate-500 dark:text-accent-muted">Your curated list of upcoming milestones.</p>
-      </div>
-
-      {data?.length === 0 ? (
-        <div className="text-center py-20 bg-white dark:bg-surface-dark rounded-xl border border-dashed border-slate-200 dark:border-border-dark">
-          <span className="material-symbols-outlined text-6xl text-slate-300 mb-4">bookmark_border</span>
-          <p className="text-slate-500 dark:text-accent-muted font-medium">You haven't saved any opportunities yet.</p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-          {data?.map((opportunity) => (
-            <div key={opportunity._id} className="bg-white dark:bg-surface-dark p-6 rounded-xl shadow-sm border border-slate-100 dark:border-border-dark">
-              <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">{opportunity.title}</h3>
-              <p className="text-sm text-slate-500 mb-4">{opportunity.organizationName}</p>
-              <div className="flex justify-between items-center">
-                <span className="text-xs font-bold px-2 py-1 bg-primary/10 text-primary rounded-md uppercase">
-                  {opportunity.type}
-                </span>
-                <span className="text-xs text-slate-400">Deadline: {new Date(opportunity.deadline).toLocaleDateString()}</span>
-              </div>
+        <div className="w-full h-full flex flex-col">
+            {/* Action Bar */}
+            <div className="sticky top-0 z-20 bg-white/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-slate-200 dark:border-border-dark px-8 py-4">
+                <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div className="flex flex-col">
+                        <h1 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">Saved Opportunities</h1>
+                        <p className="text-slate-500 dark:text-slate-400 text-sm">
+                            Manage your bookmarked scholarships, internships, and events.
+                        </p>
+                    </div>
+                     <div className="flex items-center gap-3 px-4 py-2 bg-slate-100 dark:bg-border-dark text-slate-900 dark:text-white rounded-lg text-xs font-bold uppercase tracking-widest shadow-sm">
+                        <span className="material-symbols-outlined text-[18px] text-primary" style={{ fontVariationSettings: "'FILL' 1" }}>bookmark</span>
+                        {isLoading ? '...' : data?.length || 0} items
+                    </div>
+                </div>
             </div>
-          ))}
+
+            {/* Content Area */}
+            <div className="max-w-5xl mx-auto w-full px-8 py-8 flex flex-col gap-4">
+                {isLoading ? (
+                    <div className="flex items-center justify-center min-h-[400px]">
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+                    </div>
+                ) : error ? (
+                    <div className="text-center py-20 bg-white dark:bg-surface-dark rounded-xl border border-red-200 dark:border-red-500/20 shadow-sm">
+                        <span className="material-symbols-outlined text-red-500 text-5xl mb-4">error</span>
+                        <p className="text-red-500 font-bold text-lg uppercase tracking-tight">Failed to load saved items</p>
+                        <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">Please check your connection and try again.</p>
+                    </div>
+                ) : data?.length === 0 ? (
+                    <div className="text-center py-24 bg-white dark:bg-surface-dark rounded-xl border-2 border-dashed border-slate-200 dark:border-border-dark flex flex-col items-center justify-center gap-4 shadow-sm">
+                        <div className="size-20 bg-slate-50 dark:bg-background-dark rounded-full flex items-center justify-center text-slate-400 dark:text-slate-500 border border-slate-200 dark:border-border-dark">
+                            <span className="material-symbols-outlined text-4xl">bookmark_border</span>
+                        </div>
+                        <div>
+                            <p className="text-slate-900 dark:text-white text-xl font-black tracking-tight">Your Bookmark is Empty</p>
+                            <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">Opportunities you save will appear here for quick access.</p>
+                        </div>
+                        <Link to="/dashboard" className="mt-4 px-6 py-2.5 bg-primary text-white font-bold rounded-lg hover:bg-primary/90 transition-all uppercase tracking-widest text-xs">
+                            Browse Feed
+                        </Link>
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-1 gap-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
+                        {data?.map((opportunity) => (
+                            <OpportunityCard key={opportunity._id} opportunity={opportunity} />
+                        ))}
+                    </div>
+                )}
+            </div>
         </div>
-      )}
-    </div>
-  );
+    );
 };
 
 export default SavedOpportunities;

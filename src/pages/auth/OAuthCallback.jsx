@@ -35,6 +35,8 @@ const OAuthCallback = () => {
             navigate('/onboarding');
           } else if (user.role === 'PUBLISHER') {
             navigate('/publisher/dashboard');
+          } else if (user.role === 'SEEKER') {
+            navigate('/dashboard/feed');
           } else {
             navigate('/dashboard');
           }

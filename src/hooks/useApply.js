@@ -5,7 +5,7 @@ import api from '../lib/api';
 export const useApply = (opportunityId) => {
   return useMutation({
     mutationFn: async (formData) => {
-      const response = await api.post(`/opportunities/${opportunityId}/apply`, formData, {
+      const response = await api.post(`/seekers/opportunities/${opportunityId}/apply`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
