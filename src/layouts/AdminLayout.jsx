@@ -1,44 +1,106 @@
-import React from 'react';
-import { NavLink, Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { NavLink, Link, Outlet } from 'react-router-dom';
 import { useAuthStore } from '../stores/authStore';
+import UserDropdown from '../components/dashboard/UserDropdown';
 
-const AdminLayout = ({ children }) => {
+const AdminLayout = () => {
     const { user } = useAuthStore();
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+    const navLinks = [
+        { to: "/admin/dashboard", label: "Dashboard", icon: "dashboard" },
+        { to: "/admin/moderation", label: "Moderation", icon: "gavel" },
+        { to: "/admin/users", label: "Directory", icon: "group" },
+        { to: "/admin/cms", label: "CMS", icon: "hub" },
+        { to: "/admin/mentors", label: "Mentors", icon: "person_celebrate" },
+    ];
 
     return (
-        <div className="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen flex flex-col">
-            <header className="flex items-center justify-between whitespace-nowrap border-b border-solid border-slate-200 dark:border-slate-800 px-6 py-3 bg-white dark:bg-background-dark">
-                <div className="flex items-center gap-8">
-                    <div className="flex items-center gap-4 text-primary">
-                        <div className="size-8 flex items-center justify-center rounded bg-primary/10">
-                            <span className="material-symbols-outlined text-primary">admin_panel_settings</span>
-                        </div>
-                        <h2 className="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-tight">Opportunity Circle Admin</h2>
-                    </div>
+        <div className="bg-zinc-950 font-sans text-zinc-100 min-h-screen flex flex-col md:flex-row antialiased">
+            {/* Mobile Header */}
+            <header className="md:hidden flex items-center justify-between px-5 py-3 hfas-glass sticky top-0 z-50">
+                <div className="flex items-center gap-2 text-primary">
+                    <span className="material-symbols-outlined font-black text-[20px]">admin_panel_settings</span>
+                    <h2 className="text-[11px] font-black uppercase tracking-[0.2em]">Matrix Ops</h2>
                 </div>
-                <div className="flex flex-1 justify-end gap-8">
-                    <nav className="flex items-center gap-8">
-                        <NavLink to="/admin/dashboard" className={({isActive}) => `text-sm font-medium transition-colors ${isActive ? 'text-primary border-b-2 border-primary' : 'text-slate-600 dark:text-slate-300 hover:text-primary'}`}>Dashboard</NavLink>
-                        <NavLink to="/admin/moderation" className={({isActive}) => `text-sm font-medium transition-colors ${isActive ? 'text-primary border-b-2 border-primary' : 'text-slate-600 dark:text-slate-300 hover:text-primary'}`}>Moderation</NavLink>
-                        <NavLink to="/admin/publishers" className={({isActive}) => `text-sm font-medium transition-colors ${isActive ? 'text-primary border-b-2 border-primary' : 'text-slate-600 dark:text-slate-300 hover:text-primary'}`}>Publishers</NavLink>
-                        <NavLink to="/admin/settings" className={({isActive}) => `text-sm font-medium transition-colors ${isActive ? 'text-primary border-b-2 border-primary' : 'text-slate-600 dark:text-slate-300 hover:text-primary'}`}>Settings</NavLink>
-                    </nav>
-                    <div className="flex gap-3 items-center">
-                        <button className="flex size-10 cursor-pointer items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all">
-                            <span className="material-symbols-outlined">notifications</span>
-                        </button>
-                        <div className="h-8 w-[1px] bg-slate-200 dark:bg-slate-700 mx-1"></div>
-                        <div className="flex items-center gap-3 pl-2">
-                            <div className="text-right hidden sm:block">
-                                <p className="text-xs font-semibold text-slate-900 dark:text-white leading-none">{user?.fullName}</p>
-                                <p className="text-[10px] text-slate-500 dark:text-slate-400 uppercase mt-1">{user?.role}</p>
-                            </div>
-                            <div className="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-9 border border-slate-200 dark:border-slate-700" style={{ backgroundImage: `url(${user?.profilePhotoUrl || 'https://via.placeholder.com/36'})` }}></div>
-                        </div>
-                    </div>
+                <div className="flex items-center gap-3">
+                    <UserDropdown />
+                    <button 
+                        onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                        className="size-9 flex items-center justify-center rounded-lg bg-zinc-800 text-zinc-400"
+                    >
+                        <span className="material-symbols-outlined text-[20px]">{isSidebarOpen ? 'close' : 'menu'}</span>
+                    </button>
                 </div>
             </header>
-            {children}
+
+            {/* Sidebar Overlay */}
+            {isSidebarOpen && (
+                <div 
+                    className="fixed inset-0 bg-zinc-950/50 backdrop-blur-[2px] z-40 md:hidden animate-in fade-in duration-300"
+                    onClick={() => setIsSidebarOpen(false)}
+                />
+            )}
+
+            {/* Sidebar */}
+            <aside className={`
+                fixed inset-y-0 left-0 z-50 w-64 bg-zinc-900 border-r border-zinc-800/50 transform transition-transform duration-300 ease-in-out flex flex-col
+                md:relative md:translate-x-0 
+                ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
+            `}>
+                <div className="px-6 py-10 hidden md:block">
+                    <div className="flex items-center gap-3">
+                        <div className="size-8 flex items-center justify-center rounded-lg bg-primary text-white shadow-lg shadow-primary/20">
+                            <span className="material-symbols-outlined text-[18px] font-black">admin_panel_settings</span>
+                        </div>
+                        <div className="flex flex-col">
+                            <h2 className="text-sm font-black uppercase tracking-widest text-zinc-100">Admin</h2>
+                            <p className="text-[9px] font-black text-zinc-500 uppercase tracking-[0.2em]">Precision Core</p>
+                        </div>
+                    </div>
+                </div>
+
+                <nav className="flex-1 p-3 flex flex-col gap-1">
+                    {navLinks.map((link) => (
+                        <NavLink 
+                            key={link.to} 
+                            to={link.to} 
+                            onClick={() => setIsSidebarOpen(false)}
+                            className={({isActive}) => `
+                                flex items-center gap-3 px-4 py-2.5 rounded-lg text-[10px] font-black uppercase tracking-[0.15em] transition-all duration-300
+                                ${isActive 
+                                    ? 'bg-zinc-800 text-primary shadow-sm' 
+                                    : 'text-zinc-500 hover:text-zinc-100 hover:bg-zinc-800/50'}
+                            `}
+                        >
+                            {({isActive}) => (
+                                <>
+                                    <span className={`material-symbols-outlined text-[18px] transition-colors ${isActive ? 'text-primary' : 'text-zinc-500'}`}>
+                                        {link.icon}
+                                    </span>
+                                    {link.label}
+                                </>
+                            )}
+                        </NavLink>
+                    ))}
+                </nav>
+
+                <div className="p-4 border-t border-zinc-800/50 hidden md:block">
+                    <div className="p-3 rounded-xl hover:bg-zinc-800/50 transition-colors flex items-center justify-between group">
+                         <UserDropdown />
+                         <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                            <span className="material-symbols-outlined text-zinc-600 text-[16px]">more_vert</span>
+                         </div>
+                    </div>
+                </div>
+            </aside>
+
+            {/* Main Content */}
+            <main className="flex-1 min-w-0 max-h-screen overflow-y-auto bg-zinc-950">
+                <div className="p-6 md:p-10 max-w-[1600px] mx-auto min-h-full">
+                    <Outlet />
+                </div>
+            </main>
         </div>
     );
 };

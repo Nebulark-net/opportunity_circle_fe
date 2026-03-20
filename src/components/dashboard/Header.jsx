@@ -25,16 +25,16 @@ const Header = () => {
     const navItems = user?.role === 'PUBLISHER' ? publisherNavItems : seekerNavItems;
 
     return (
-        <header className="flex items-center justify-between border-b border-slate-200 dark:border-border-dark bg-white dark:bg-background-dark px-6 py-3 shrink-0">
+        <header className="flex items-center justify-between border-b border-zinc-800 dark:border-zinc-800 bg-zinc-950 dark:bg-zinc-950 px-6 py-3 shrink-0 sticky top-0 z-50">
             <div className="flex items-center gap-8">
                 <Link to={user?.role === 'PUBLISHER' ? "/publisher/dashboard" : "/dashboard"} className="flex items-center gap-3 text-primary hover:opacity-90 transition-opacity">
-                    <div className="size-8 flex items-center justify-center bg-primary/10 rounded-lg">
-                        <span className="material-symbols-outlined">explore</span>
+                    <div className="size-8 flex items-center justify-center bg-primary/10 rounded-lg border border-primary/20">
+                        <span className="material-symbols-outlined text-[20px]">explore</span>
                     </div>
-                    <h2 className="text-slate-900 dark:text-white text-xl font-bold leading-tight tracking-tight">Opportunity Circle</h2>
+                    <h2 className="text-zinc-100 text-[13px] font-black uppercase tracking-[0.1em]">Opportunity Circle</h2>
                 </Link>
                 
-                <nav className="hidden md:flex items-center gap-6">
+                <nav className="hidden md:flex items-center gap-8">
                     {navItems.map((item) => {
                         const isActive = item.exact 
                             ? location.pathname === item.path
@@ -44,10 +44,10 @@ const Header = () => {
                             <Link
                                 key={item.path}
                                 to={item.path}
-                                className={`text-sm font-semibold transition-colors pb-1 ${
+                                className={`text-[10px] font-black uppercase tracking-[0.2em] transition-all pb-1 border-b-2 ${
                                     isActive 
-                                        ? 'text-primary border-b-2 border-primary' 
-                                        : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white border-b-2 border-transparent'
+                                        ? 'text-primary border-primary shadow-[0_4px_10px_-4px_rgba(0,167,149,0.3)]' 
+                                        : 'text-zinc-500 hover:text-zinc-100 border-transparent'
                                 }`}
                             >
                                 {item.label}
@@ -57,12 +57,12 @@ const Header = () => {
                 </nav>
             </div>
 
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-5">
                 <NotificationDropdown />
-                <Link to="/settings" className="p-2 rounded-lg bg-slate-100 dark:bg-border-dark text-slate-500 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors">
-                    <span className="material-symbols-outlined text-[22px]">settings</span>
+                <Link to="/settings" className="size-9 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-500 hover:text-zinc-100 flex items-center justify-center transition-all">
+                    <span className="material-symbols-outlined text-[20px]">settings</span>
                 </Link>
-                <div className="h-8 w-px bg-slate-200 dark:bg-border-dark mx-1"></div>
+                <div className="h-6 w-px bg-zinc-800 mx-1"></div>
                 
                 <UserDropdown />
             </div>

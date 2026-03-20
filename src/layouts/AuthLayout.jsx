@@ -3,9 +3,11 @@ import { Outlet, Navigate, Link } from 'react-router-dom';
 import { useAuthStore } from '../stores/authStore';
 
 const AuthLayout = () => {
-    const { isAuthenticated } = useAuthStore();
+    const { isAuthenticated, user } = useAuthStore();
 
     if (isAuthenticated) {
+        if (user?.role === 'PUBLISHER') return <Navigate to="/publisher/dashboard" replace />;
+        if (user?.role === 'ADMIN') return <Navigate to="/admin/moderation" replace />;
         return <Navigate to="/dashboard" replace />;
     }
 

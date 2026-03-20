@@ -88,9 +88,11 @@ const Settings = () => {
         mutationFn: (data) => user?.role === 'PUBLISHER' ? publisherService.updateProfile(data) : userService.updateProfile(data),
         onSuccess: (response) => {
             queryClient.invalidateQueries(['profile']);
-            // For publishers, backend returns { user, profile }; for seekers it returns user directly
-            const updatedUser = response?.data?.user || response?.data || null;
-            if (updatedUser) {
+            // For publishers, backend returns { user, profile }; extract payload reliably
+            const payload = response?.data?.data || response?.data;
+            const updatedUser = payload?.user || payload;
+            
+            if (updatedUser && updatedUser._id) {
                 updateLocalStore(updatedUser);
             }
             toast.success('Changes saved successfully');
@@ -154,24 +156,30 @@ const Settings = () => {
     const { preferences } = profileResponse?.data || { preferences: {} };
     const currentProfile = profileResponse?.data?.user || user;
 
+    const inputClasses = "h-12 w-full rounded-xl border border-zinc-800 bg-zinc-900/50 px-4 text-xs font-medium text-zinc-100 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-zinc-600";
+    const labelClasses = "text-[10px] font-black uppercase tracking-widest text-zinc-500";
+    const sectionClasses = "bg-zinc-900 rounded-2xl border border-zinc-800 shadow-sm p-6 sm:p-8 flex flex-col gap-6";
+    const dividerClasses = "border-b border-zinc-800 pb-4";
+    const sectionTitleClasses = "text-xs font-black uppercase tracking-[0.2em] text-zinc-100";
+
     return (
-        <div className="flex-1 flex flex-col gap-6 animate-in fade-in duration-500">
+        <div className="flex-1 flex flex-col gap-6 animate-in fade-in duration-500 bg-zinc-950 min-h-full">
             <div className="flex items-center justify-between">
-                <h1 className="text-2xl font-black tracking-tight text-slate-900 dark:text-white">Settings</h1>
+                <h1 className="text-lg font-black uppercase tracking-[0.05em] text-zinc-100">Settings Protocol</h1>
             </div>
 
-            {/* Profile Picture Section (Matching Designing aesthetic) */}
-            <section className="bg-white dark:bg-surface-dark rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-6 sm:p-8 flex flex-col gap-6">
-                 <div className="border-b border-slate-100 dark:border-slate-800 pb-4">
-                    <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">Profile Identity</h2>
+            {/* Profile Picture Section */}
+            <section className={sectionClasses}>
+                 <div className={dividerClasses}>
+                    <h2 className={sectionTitleClasses}>Profile Identity</h2>
                 </div>
                 <div className="flex items-center gap-6">
                     <div className="relative group size-24 shrink-0">
-                        <div className="size-full rounded-2xl border-2 border-primary overflow-hidden bg-slate-100 dark:bg-background-dark">
+                        <div className="size-full rounded-2xl border-2 border-zinc-700 group-hover:border-primary transition-colors overflow-hidden bg-zinc-800 shadow-hfas-inner p-1">
                             {currentProfile?.profilePhotoUrl ? (
-                                <img src={currentProfile.profilePhotoUrl} alt="Profile" className="w-full h-full object-cover" />
+                                <img src={currentProfile.profilePhotoUrl} alt="Profile" className="w-full h-full object-cover rounded-xl" crossOrigin="anonymous" referrerPolicy="no-referrer" />
                             ) : (
-                                <div className="w-full h-full flex items-center justify-center text-slate-300">
+                                <div className="w-full h-full flex items-center justify-center text-zinc-600 bg-zinc-900 rounded-xl">
                                     <span className="material-symbols-outlined text-4xl">person</span>
                                 </div>
                             )}
@@ -185,75 +193,75 @@ const Settings = () => {
                         <input type="file" ref={fileInputRef} className="hidden" onChange={handlePhotoUpload} accept="image/*" />
                     </div>
                     <div className="flex flex-col gap-1">
-                        <h3 className="font-bold text-slate-900 dark:text-white">{currentProfile?.fullName}</h3>
-                        <p className="text-xs text-slate-500 dark:text-accent-muted uppercase font-black tracking-widest">{currentProfile?.role}</p>
+                        <h3 className="text-sm font-black uppercase tracking-widest text-zinc-100 truncate">{currentProfile?.fullName}</h3>
+                        <p className="text-[10px] text-zinc-500 uppercase font-black tracking-[0.2em]">{currentProfile?.role}</p>
                     </div>
                 </div>
             </section>
 
             <form onSubmit={handleSubmit(onProfileSubmit)} className="flex flex-col gap-6">
                 {/* Account Details */}
-                <section className="bg-white dark:bg-surface-dark rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-6 sm:p-8 flex flex-col gap-6">
-                    <div className="border-b border-slate-100 dark:border-slate-800 pb-4">
-                        <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">Account Details</h2>
+                <section className={sectionClasses}>
+                    <div className={dividerClasses}>
+                        <h2 className={sectionTitleClasses}>Account Logistics</h2>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="flex flex-col gap-2">
-                            <label className="text-sm font-bold text-slate-700 dark:text-slate-300">Full Name</label>
-                            <input {...register('fullName')} className="h-12 w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-background-dark px-4 text-slate-800 dark:text-slate-200 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-slate-400" type="text" placeholder="John Doe" />
+                            <label className={labelClasses}>Full Identity</label>
+                            <input {...register('fullName')} className={inputClasses} type="text" placeholder="John Doe" />
                             {errors.fullName && <span className="text-xs text-red-500 font-medium">{errors.fullName.message}</span>}
                         </div>
                         <div className="flex flex-col gap-2">
-                            <label className="text-sm font-bold text-slate-700 dark:text-slate-300">Username</label>
-                            <input {...register('username')} className="h-12 w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-background-dark px-4 text-slate-800 dark:text-slate-200 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-slate-400" type="text" placeholder="johndoe" />
+                            <label className={labelClasses}>Handle</label>
+                            <input {...register('username')} className={inputClasses} type="text" placeholder="johndoe" />
                         </div>
                         <div className="flex flex-col gap-2">
-                            <label className="text-sm font-bold text-slate-700 dark:text-slate-300">Profile Tag</label>
-                            <input {...register('profileTag')} className="h-12 w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-background-dark px-4 text-slate-800 dark:text-slate-200 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-slate-400" type="text" placeholder="Scholarship Seeker" />
+                            <label className={labelClasses}>Operational Tag</label>
+                            <input {...register('profileTag')} className={inputClasses} type="text" placeholder="Protocol Operative" />
                         </div>
                         <div className="flex flex-col gap-2">
-                            <label className="text-sm font-bold text-slate-700 dark:text-slate-300">Phone Number</label>
-                            <input {...register('phoneNumber')} className="h-12 w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-background-dark px-4 text-slate-800 dark:text-slate-200 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-slate-400" type="tel" placeholder="+1 (555) 000-0000" />
+                            <label className={labelClasses}>Comms Link</label>
+                            <input {...register('phoneNumber')} className={inputClasses} type="tel" placeholder="+1 (555) 000-0000" />
                         </div>
                     </div>
                 </section>
 
                 {/* Professional & Academic / Business Info (Role Aware) */}
-                <section className="bg-white dark:bg-surface-dark rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-6 sm:p-8 flex flex-col gap-6">
-                    <div className="border-b border-slate-100 dark:border-slate-800 pb-4">
-                        <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
-                            {user?.role === 'PUBLISHER' ? 'Business Profile' : 'Career & Education'}
+                <section className={sectionClasses}>
+                    <div className={dividerClasses}>
+                        <h2 className={sectionTitleClasses}>
+                            {user?.role === 'PUBLISHER' ? 'Enterprise Specifications' : 'Career & Education'}
                         </h2>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {user?.role === 'PUBLISHER' ? (
                             <>
                                 <div className="flex flex-col gap-2">
-                                    <label className="text-sm font-bold text-slate-700 dark:text-slate-300">Organization Name</label>
-                                    <input {...register('organizationName')} className="h-12 w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-background-dark px-4 text-slate-800 dark:text-slate-200 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-slate-400" type="text" placeholder="Acme Corp" />
+                                    <label className={labelClasses}>Organization Name</label>
+                                    <input {...register('organizationName')} className={inputClasses} type="text" placeholder="Acme Corp" />
                                 </div>
                                 <div className="flex flex-col gap-2">
-                                    <label className="text-sm font-bold text-slate-700 dark:text-slate-300">Company Website</label>
-                                    <input {...register('websiteUrl')} className="h-12 w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-background-dark px-4 text-slate-800 dark:text-slate-200 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-slate-400" type="text" placeholder="https://acme.com" />
+                                    <label className={labelClasses}>Network Portal</label>
+                                    <input {...register('websiteUrl')} className={inputClasses} type="text" placeholder="https://acme.com" />
                                 </div>
                                 <div className="flex flex-col gap-2">
-                                    <label className="text-sm font-bold text-slate-700 dark:text-slate-300">Industry</label>
-                                    <input {...register('industry')} className="h-12 w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-background-dark px-4 text-slate-800 dark:text-slate-200 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-slate-400" type="text" placeholder="Technology" />
+                                    <label className={labelClasses}>Industry Designation</label>
+                                    <input {...register('industry')} className={inputClasses} type="text" placeholder="Technology" />
                                 </div>
                             </>
                         ) : (
                             <>
                                 <div className="flex flex-col gap-2">
-                                    <label className="text-sm font-bold text-slate-700 dark:text-slate-300">Academic Institution</label>
-                                    <input {...register('education')} className="h-12 w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-background-dark px-4 text-slate-800 dark:text-slate-200 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-slate-400" type="text" placeholder="Harvard University" />
+                                    <label className={labelClasses}>Academic Institution</label>
+                                    <input {...register('education')} className={inputClasses} type="text" placeholder="Harvard University" />
                                 </div>
                                 <div className="flex flex-col gap-2">
-                                    <label className="text-sm font-bold text-slate-700 dark:text-slate-300">Field of Study</label>
-                                    <input {...register('fieldOfStudy')} className="h-12 w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-background-dark px-4 text-slate-800 dark:text-slate-200 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-slate-400" type="text" placeholder="Computer Science" />
+                                    <label className={labelClasses}>Field of Study</label>
+                                    <input {...register('fieldOfStudy')} className={inputClasses} type="text" placeholder="Computer Science" />
                                 </div>
                                 <div className="flex flex-col gap-2">
-                                    <label className="text-sm font-bold text-slate-700 dark:text-slate-300">Degree Level</label>
-                                    <select {...register('degreeLevel')} className="h-12 w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-background-dark px-4 text-slate-800 dark:text-slate-200 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all">
+                                    <label className={labelClasses}>Degree Clearance</label>
+                                    <select {...register('degreeLevel')} className={`${inputClasses} appearance-none`}>
                                         <option value="">Select Level</option>
                                         <option value="UNDERGRADUATE">Undergraduate</option>
                                         <option value="GRADUATE">Graduate</option>
@@ -264,57 +272,57 @@ const Settings = () => {
                             </>
                         )}
                         <div className="flex flex-col gap-2">
-                            <label className="text-sm font-bold text-slate-700 dark:text-slate-300">Country</label>
-                            <input {...register('country')} className="h-12 w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-background-dark px-4 text-slate-800 dark:text-slate-200 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-slate-400" type="text" placeholder="United States" />
+                            <label className={labelClasses}>Territory</label>
+                            <input {...register('country')} className={inputClasses} type="text" placeholder="United States" />
                         </div>
                          <div className={`flex flex-col gap-2 ${user?.role === 'PUBLISHER' ? '' : 'md:col-span-2'}`}>
-                            <label className="text-sm font-bold text-slate-700 dark:text-slate-300">Location / City</label>
-                            <input {...register('location')} className="h-12 w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-background-dark px-4 text-slate-800 dark:text-slate-200 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-slate-400" type="text" placeholder="Mountain View, CA" />
+                            <label className={labelClasses}>Sector Location</label>
+                            <input {...register('location')} className={inputClasses} type="text" placeholder="Mountain View, CA" />
                         </div>
                     </div>
                 </section>
 
                 {/* Biography / Description (Role Aware) */}
-                <section className="bg-white dark:bg-surface-dark rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-6 sm:p-8 flex flex-col gap-6">
-                    <div className="border-b border-slate-100 dark:border-slate-800 pb-4">
-                        <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
-                            {user?.role === 'PUBLISHER' ? 'Company Overview' : 'Biography'}
+                <section className={sectionClasses}>
+                    <div className={dividerClasses}>
+                        <h2 className={sectionTitleClasses}>
+                            {user?.role === 'PUBLISHER' ? 'Enterprise Manifest' : 'Biography'}
                         </h2>
                     </div>
                     <div className="flex flex-col gap-2">
-                        <label className="text-sm font-bold text-slate-700 dark:text-slate-300">
-                            {user?.role === 'PUBLISHER' ? 'Corporate Description' : 'Professional Bio'}
+                        <label className={labelClasses}>
+                            {user?.role === 'PUBLISHER' ? 'Corporate Description' : 'Professional Dossier'}
                         </label>
                         <textarea 
                             {...register(user?.role === 'PUBLISHER' ? 'description' : 'bio')} 
                             rows={user?.role === 'PUBLISHER' ? 6 : 4} 
-                            className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-background-dark p-4 text-slate-800 dark:text-slate-200 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-slate-400 resize-none" 
+                            className="w-full rounded-xl border border-zinc-800 bg-zinc-900/50 p-4 text-zinc-100 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-zinc-600 resize-none" 
                             placeholder={user?.role === 'PUBLISHER' ? "Describe your organization's mission and impact..." : "Tell us about your professional journey..."} 
                         />
                         <div className="flex justify-end">
-                            <span className="text-xs text-slate-500 font-bold uppercase">
+                            <span className="text-[10px] text-zinc-500 font-black uppercase tracking-widest mt-1">
                                 {watch(user?.role === 'PUBLISHER' ? 'description' : 'bio')?.length || 0}/{user?.role === 'PUBLISHER' ? 1000 : 500}
                             </span>
                         </div>
                     </div>
                 </section>
 
-                {/* Notification Preferences — Seeker only (publishers have no UserPreference records) */}
+                {/* Notification Preferences — Seeker only */}
                 {user?.role !== 'PUBLISHER' && (
-                <section className="bg-white dark:bg-surface-dark rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-6 sm:p-8 flex flex-col gap-6">
-                    <div className="border-b border-slate-100 dark:border-slate-800 pb-4">
-                        <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">Notification Preferences</h2>
+                <section className={sectionClasses}>
+                    <div className={dividerClasses}>
+                        <h2 className={sectionTitleClasses}>Comms Preferences</h2>
                     </div>
                     <div className="flex flex-col gap-6">
                         {[
-                            { key: 'emailNotifications', label: 'Email Notifications', sub: 'Receive daily digests of new opportunities.' },
-                            { key: 'pushNotifications', label: 'Push Notifications', sub: 'Get real-time alerts for application updates.' },
-                            { key: 'weeklyDigest', label: 'Weekly Summary', sub: 'Receive a weekly overview of saved items.' },
+                            { key: 'emailNotifications', label: 'Email Transmissions', sub: 'Receive daily digests of new opportunities.' },
+                            { key: 'pushNotifications', label: 'Push Directives', sub: 'Get real-time alerts for system updates.' },
+                            { key: 'weeklyDigest', label: 'Weekly Summary', sub: 'Receive a weekly overview of operational nodes.' },
                         ].map((item) => (
                             <div key={item.key} className="flex items-center justify-between">
                                 <div className="flex flex-col gap-1">
-                                    <span className="text-sm font-bold text-slate-800 dark:text-slate-200">{item.label}</span>
-                                    <span className="text-xs text-slate-500 dark:text-accent-muted">{item.sub}</span>
+                                    <span className="text-[11px] font-black uppercase tracking-widest text-zinc-100">{item.label}</span>
+                                    <span className="text-[10px] uppercase font-black tracking-widest text-zinc-500">{item.sub}</span>
                                 </div>
                                 <label className="relative inline-flex items-center cursor-pointer">
                                     <input 
@@ -323,7 +331,7 @@ const Settings = () => {
                                         checked={preferences?.[item.key]}
                                         onChange={() => updatePreferencesMutation.mutate({ [item.key]: !preferences?.[item.key] })}
                                     />
-                                    <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-slate-600 peer-checked:bg-primary"></div>
+                                    <div className="w-11 h-6 bg-zinc-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all border border-zinc-700 peer-checked:bg-primary"></div>
                                 </label>
                             </div>
                         ))}
@@ -331,54 +339,54 @@ const Settings = () => {
                 </section>
                 )}
 
-                {/* Privacy (Design Layout) */}
-                <section className="bg-white dark:bg-surface-dark rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-6 sm:p-8 flex flex-col gap-6">
-                    <div className="border-b border-slate-100 dark:border-slate-800 pb-4">
-                        <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">Privacy</h2>
+                {/* Privacy */}
+                <section className={sectionClasses}>
+                    <div className={dividerClasses}>
+                        <h2 className={sectionTitleClasses}>Security Protocols</h2>
                     </div>
                     <div className="flex flex-col gap-6">
                         <div className="flex items-center justify-between">
                             <div className="flex flex-col gap-1">
-                                <span className="text-sm font-bold text-slate-800 dark:text-slate-200">Profile Visibility</span>
-                                <span className="text-xs text-slate-500 dark:text-accent-muted">{user?.role === 'PUBLISHER' ? 'Show your organization publicly on the platform.' : 'Allow publishers to find you.'}</span>
+                                <span className="text-[11px] font-black uppercase tracking-widest text-zinc-100">Public Visibility</span>
+                                <span className="text-[10px] uppercase font-black tracking-widest text-zinc-500">{user?.role === 'PUBLISHER' ? 'Show your organization publicly on the platform.' : 'Allow publishers to locate your profile.'}</span>
                             </div>
                             <label className="relative inline-flex items-center cursor-pointer">
                                 <input {...register('isProfileVisible')} type="checkbox" className="sr-only peer" />
-                                <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-slate-600 peer-checked:bg-primary"></div>
+                                <div className="w-11 h-6 bg-zinc-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all border border-zinc-700 peer-checked:bg-primary"></div>
                             </label>
                         </div>
                         <div className="flex items-center justify-between">
                             <div className="flex flex-col gap-1">
-                                <span className="text-sm font-bold text-slate-800 dark:text-slate-200">Show Location</span>
-                                <span className="text-xs text-slate-500 dark:text-accent-muted">Display your current city on your public profile.</span>
+                                <span className="text-[11px] font-black uppercase tracking-widest text-zinc-100">Broadcast Location</span>
+                                <span className="text-[10px] uppercase font-black tracking-widest text-zinc-500">Display your current sector on public matrices.</span>
                             </div>
                             <label className="relative inline-flex items-center cursor-pointer">
                                 <input {...register('showLocation')} type="checkbox" className="sr-only peer" />
-                                <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-slate-600 peer-checked:bg-primary"></div>
+                                <div className="w-11 h-6 bg-zinc-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all border border-zinc-700 peer-checked:bg-primary"></div>
                             </label>
                         </div>
                     </div>
                 </section>
 
-                {/* Sticky Save Bar (Industrial pattern, but matching design components) */}
-                <div className="flex justify-end gap-4 pt-2 mb-8">
+                {/* Deployment Bar */}
+                <div className="flex justify-end gap-4 pt-4 mb-8">
                      {isDirty && (
                         <button 
                             type="button"
                             onClick={() => reset()}
-                            className="px-6 h-12 text-slate-500 font-bold hover:text-slate-700 dark:hover:text-slate-300 transition-colors uppercase text-xs tracking-widest"
+                            className="px-6 h-12 text-zinc-500 font-black hover:text-zinc-300 transition-colors uppercase text-[10px] tracking-[0.2em]"
                         >
-                            Discard
+                            Abort Changes
                         </button>
                     )}
                     <button 
                         type="submit"
                         disabled={updateProfileMutation.isPending}
-                        className="px-10 h-14 bg-primary hover:bg-primary/90 text-white font-black rounded-2xl shadow-xl shadow-primary/20 transition-all flex items-center justify-center gap-2 uppercase text-xs tracking-[0.2em] min-w-[200px]"
+                        className="px-10 h-14 bg-primary hover:bg-primary/90 text-white font-black rounded-2xl shadow-xl shadow-primary/20 transition-all flex items-center justify-center gap-2 uppercase text-[10px] tracking-[0.2em] min-w-[200px]"
                     >
                         {updateProfileMutation.isPending ? (
                             <div className="size-5 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
-                        ) : 'Save New Changes'}
+                        ) : 'Deploy Updates'}
                     </button>
                 </div>
             </form>

@@ -34,13 +34,21 @@ import Saved from './pages/dashboard/SavedOpportunities';
 import Resources from './pages/Resources';
 import OnboardingFlow from './pages/onboarding/OnboardingFlow';
 
+// Admin Pages
 import ModerationQueue from './pages/admin/ModerationQueue';
+import AdminDashboard from './pages/admin/AdminDashboard';
+import AdminUsers from './pages/admin/AdminUsers';
+import AdminSettings from './pages/admin/AdminSettings';
+import AdminCMS from './pages/admin/AdminCMS';
+import AdminMentors from './pages/admin/AdminMentors';
 
 // Publisher Pages
 import PublisherDashboard from './pages/publisher/PublisherDashboard';
 import CreateOpportunity from './pages/publisher/CreateOpportunity';
 import PublisherListings from './pages/publisher/PublisherListings';
 import ApplicantManagement from './pages/publisher/ApplicantManagement';
+
+import PublisherInsights from './pages/publisher/PublisherInsights';
 
 // Initialize QueryClient
 const queryClient = new QueryClient();
@@ -130,8 +138,13 @@ function App() {
                 </PrivateRoute>
               }
             >
-              <Route index element={<Navigate replace to="moderation" />} />
+              <Route index element={<Navigate replace to="dashboard" />} />
+              <Route path="dashboard" element={<AdminDashboard />} />
+              <Route path="users" element={<AdminUsers />} />
               <Route path="moderation" element={<ModerationQueue />} />
+              <Route path="settings" element={<AdminSettings />} />
+              <Route path="cms" element={<AdminCMS />} />
+              <Route path="mentors" element={<AdminMentors />} />
             </Route>
 
             <Route
@@ -146,8 +159,10 @@ function App() {
               <Route path="dashboard" element={<PublisherDashboard />} />
               <Route path="create" element={<CreateOpportunity />} />
               <Route path="edit/:id" element={<CreateOpportunity />} />
+              <Route path="opportunity/:id" element={<OpportunityDetail />} />
               <Route path="listings" element={<PublisherListings />} />
               <Route path="applicants" element={<ApplicantManagement />} />
+              <Route path="insights" element={<PublisherInsights />} />
               <Route path="profile" element={<Profile />} />
               <Route path="settings" element={<Settings />} />
             </Route>

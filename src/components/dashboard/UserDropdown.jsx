@@ -9,7 +9,6 @@ const UserDropdown = () => {
     const { user, logout } = useAuthStore();
     const navigate = useNavigate();
 
-    // Close on click outside
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -26,126 +25,151 @@ const UserDropdown = () => {
     };
 
     const menuItems = [
-        { 
-            label: 'My Profile', 
-            icon: 'person', 
+        ...(user?.role !== 'ADMIN' ? [{ 
+            label: 'Registry Profile', 
+            icon: 'account_circle', 
             path: user?.role === 'PUBLISHER' ? '/publisher/profile' : '/dashboard/profile',
-            desc: 'View your public profile'
-        },
+            desc: 'Node identity overview'
+        }] : []),
         { 
-            label: 'Account Settings', 
-            icon: 'settings', 
-            path: user?.role === 'PUBLISHER' ? '/publisher/settings' : '/dashboard/settings',
-            desc: 'Manage your security & info'
+            label: 'Account Modulation', 
+            icon: 'dynamic_settings', 
+            path: user?.role === 'ADMIN' 
+                ? '/admin/settings' 
+                : (user?.role === 'PUBLISHER' ? '/publisher/settings' : '/dashboard/settings'),
+            desc: 'System security & logic'
         },
     ];
+
+    const containerVariants = {
+        hidden: { opacity: 0, y: 12, scale: 0.96, filter: 'blur(4px)' },
+        visible: { 
+            opacity: 1, y: 0, scale: 1, filter: 'blur(0px)',
+            transition: { 
+                duration: 0.4, 
+                ease: [0.22, 1, 0.36, 1],
+                staggerChildren: 0.08,
+                delayChildren: 0.05
+            } 
+        },
+        exit: { 
+            opacity: 0, y: 8, scale: 0.98, filter: 'blur(4px)',
+            transition: { duration: 0.2, ease: 'easeIn' } 
+        }
+    };
+
+    const itemVariants = {
+        hidden: { opacity: 0, x: -8 },
+        visible: { opacity: 1, x: 0, transition: { duration: 0.3, ease: 'easeOut' } }
+    };
 
     return (
         <div className="relative" ref={dropdownRef}>
             <button 
                 onClick={() => setIsOpen(!isOpen)}
-                className="flex items-center gap-3 p-1 pl-3 rounded-full hover:bg-slate-100 dark:hover:bg-border-dark transition-all border border-transparent hover:border-primary/10 group"
+                className={`flex items-center gap-3 p-1.5 pl-4 rounded-xl transition-all border border-transparent group ${
+                    isOpen ? 'bg-zinc-800/50 border-zinc-700/50' : 'hover:bg-zinc-900/80 hover:border-zinc-800/50'
+                }`}
             >
-                {/* Text Identity - Hidden on mobile */}
+                {/* Text Identity */}
                 <div className="hidden md:flex flex-col items-end text-right">
-                    <p className="text-[12px] font-black text-slate-900 dark:text-white leading-tight uppercase tracking-tighter">
-                        {user?.fullName || 'User Name'}
+                    <p className="text-[11px] font-black text-zinc-100 leading-tight uppercase tracking-[0.1em]">
+                        {user?.fullName || 'Identity Node'}
                     </p>
                     <div className="flex items-center gap-2 mt-0.5">
-                        {user?.profileTag && (
-                            <span className="text-[8px] font-black text-primary uppercase tracking-widest border border-primary/20 px-1.5 rounded bg-primary/5">
-                                {user.profileTag}
-                            </span>
-                        )}
-                        <p className="text-[9px] text-slate-500 dark:text-slate-400 font-bold capitalize">
-                            {user?.role === 'PUBLISHER' 
-                                ? 'Industrial Publisher' 
-                                : user?.degreeLevel 
-                                    ? `${user.degreeLevel.toLowerCase()} Seeker` 
-                                    : (user?.role === 'SEEKER' ? 'Undergraduate' : 'Platform Member')
-                            }
-                        </p>
+                        <span className="text-[8px] font-black text-primary uppercase tracking-[0.2em]">
+                            {user?.role === 'ADMIN' ? 'Root Admin' : user?.role || 'Guest'}
+                        </span>
                     </div>
                 </div>
 
-                {/* Profile Picture - Always Visible */}
-                <div className="size-10 rounded-full bg-primary/10 border-2 border-primary/20 group-hover:border-primary transition-colors overflow-hidden flex items-center justify-center shrink-0 shadow-sm">
+                {/* Profile Picture */}
+                <div className={`size-10 rounded-xl bg-zinc-800 border-2 transition-all overflow-hidden flex items-center justify-center shrink-0 shadow-hfas-inner ${
+                    isOpen ? 'border-primary' : 'border-zinc-700 group-hover:border-zinc-600'
+                }`}>
                     {user?.profilePhotoUrl ? (
-                        <img alt="Profile" className="w-full h-full object-cover" src={user.profilePhotoUrl} />
+                        <img alt="Profile" className="size-full object-cover" src={user.profilePhotoUrl} crossOrigin="anonymous" referrerPolicy="no-referrer" />
                     ) : (
-                        <span className="material-symbols-outlined text-primary text-2xl">person</span>
+                        <span className="material-symbols-outlined text-zinc-500 text-[20px]">person_filled</span>
                     )}
                 </div>
 
-                {/* Mobile chevron/indicator */}
+                {/* Mobile chevron */}
                 <div className="md:hidden">
-                    <span className="material-symbols-outlined text-slate-400 text-[18px]">expand_more</span>
+                    <span className={`material-symbols-outlined text-zinc-500 text-[18px] transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}>expand_more</span>
                 </div>
             </button>
 
-            <AnimatePresence>
+            <AnimatePresence mode="wait">
                 {isOpen && (
                     <motion.div 
-                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                        transition={{ duration: 0.15, ease: 'easeOut' }}
-                        className="absolute right-0 mt-3 w-64 bg-white dark:bg-surface-dark border border-slate-200 dark:border-border-dark rounded-2xl shadow-2xl z-50 overflow-hidden"
+                        variants={containerVariants}
+                        initial="hidden"
+                        animate="visible"
+                        exit="exit"
+                        className="absolute right-0 mt-4 w-72 hfas-glass rounded-2xl shadow-hfas-lg z-50 overflow-hidden"
                     >
                         {/* Header Section */}
-                        <div className="p-5 border-b border-slate-100 dark:border-border-dark bg-slate-50/50 dark:bg-background-dark/50">
-                            <div className="flex items-center gap-3 mb-3">
-                                <div className="size-10 rounded-xl bg-primary flex items-center justify-center text-white shadow-lg shadow-primary/20">
-                                    <span className="material-symbols-outlined">verified_user</span>
+                        <div className="p-6 border-b border-zinc-800/50 bg-zinc-950/40 relative overflow-hidden">
+                            <div className="absolute top-0 right-0 size-32 bg-primary/5 rounded-full blur-3xl -mr-16 -mt-16"></div>
+                            <div className="flex items-center gap-4 relative z-10">
+                                <div className="size-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shadow-hfas-inner">
+                                    <span className="material-symbols-outlined text-[24px]">terminal</span>
                                 </div>
                                 <div className="min-w-0">
-                                    <h4 className="text-sm font-black text-slate-900 dark:text-white truncate">
+                                    <h4 className="text-[13px] font-black text-zinc-100 uppercase tracking-tight truncate">
                                         {user?.fullName}
                                     </h4>
-                                    <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest truncate">
-                                        {user?.role} Protocol
+                                    <p className="text-[9px] text-zinc-500 font-black uppercase tracking-[0.2em] truncate">
+                                        {user?.role} PROTOCOL
                                     </p>
                                 </div>
                             </div>
                         </div>
 
                         {/* Menu Items */}
-                        <div className="p-2">
-                            {menuItems.map((item) => (
-                                <Link
-                                    key={item.label}
-                                    to={item.path}
-                                    onClick={() => setIsOpen(false)}
-                                    className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-background-dark/50 transition-colors group"
-                                >
-                                    <div className="size-9 rounded-lg bg-slate-100 dark:bg-border-dark flex items-center justify-center text-slate-500 group-hover:text-primary group-hover:bg-primary/10 transition-colors">
-                                        <span className="material-symbols-outlined text-[20px]">{item.icon}</span>
-                                    </div>
-                                    <div>
-                                        <p className="text-xs font-bold text-slate-900 dark:text-white">{item.label}</p>
-                                        <p className="text-[10px] text-slate-500">{item.desc}</p>
-                                    </div>
-                                </Link>
-                            ))}
+                        <div className="p-3">
+                            <div className="flex flex-col gap-1">
+                                {menuItems.map((item) => (
+                                    <motion.div key={item.label} variants={itemVariants}>
+                                        <Link
+                                            to={item.path}
+                                            onClick={() => setIsOpen(false)}
+                                            className="flex items-center gap-4 p-3.5 rounded-xl hover:bg-zinc-800/50 transition-all group"
+                                        >
+                                            <div className="size-10 rounded-xl bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-500 group-hover:text-primary group-hover:bg-primary/10 group-hover:border-primary/20 transition-all shadow-hfas-inner">
+                                                <span className="material-symbols-outlined text-[20px]">{item.icon}</span>
+                                            </div>
+                                            <div className="flex flex-col">
+                                                <p className="text-xs font-black text-zinc-200 uppercase tracking-[0.05em]">{item.label}</p>
+                                                <p className="text-[9px] text-zinc-500 font-medium">{item.desc}</p>
+                                            </div>
+                                        </Link>
+                                    </motion.div>
+                                ))}
+                            </div>
                             
-                            <div className="h-px bg-slate-100 dark:bg-border-dark my-2 mx-2"></div>
+                            <div className="h-px bg-zinc-800/50 my-3 mx-2"></div>
 
-                            <button
-                                onClick={handleLogout}
-                                className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors group"
-                            >
-                                <div className="size-9 rounded-lg bg-red-50 dark:bg-red-500/10 flex items-center justify-center text-red-500 group-hover:bg-red-500 group-hover:text-white transition-all">
-                                    <span className="material-symbols-outlined text-[20px]">logout</span>
-                                </div>
-                                <div className="text-left">
-                                    <p className="text-xs font-bold text-red-500">Sign Out</p>
-                                    <p className="text-[10px] text-red-400/80 uppercase font-black tracking-widest">End Session</p>
-                                </div>
-                            </button>
+                            <motion.div variants={itemVariants}>
+                                <button
+                                    onClick={handleLogout}
+                                    className="w-full flex items-center gap-4 p-3.5 rounded-xl hover:bg-red-500/5 transition-all group"
+                                >
+                                    <div className="size-10 rounded-xl bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-500 group-hover:bg-red-600 group-hover:text-white group-hover:border-red-600 transition-all shadow-hfas-inner">
+                                        <span className="material-symbols-outlined text-[20px]">power_settings_new</span>
+                                    </div>
+                                    <div className="text-left">
+                                        <p className="text-xs font-black text-zinc-300 uppercase tracking-[0.05em] group-hover:text-red-400">End Session</p>
+                                        <p className="text-[9px] text-zinc-500 font-black uppercase tracking-[0.2em]">Terminate Node</p>
+                                    </div>
+                                </button>
+                            </motion.div>
                         </div>
 
-                        <div className="p-3 border-t border-slate-100 dark:border-border-dark bg-slate-50/50 dark:bg-background-dark/50 flex justify-center">
-                            <span className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em]">Opportunity Circle v1.0</span>
+                        {/* Footer */}
+                        <div className="p-4 border-t border-zinc-800/50 bg-zinc-950/20 flex justify-center">
+                            <span className="text-[8px] font-black text-zinc-600 uppercase tracking-[0.3em]">Core v2.4.0 • Industrial Platform</span>
                         </div>
                     </motion.div>
                 )}

@@ -3,29 +3,32 @@ import { CheckCircle, XCircle } from 'lucide-react';
 import { useModerate } from '../../hooks/useModerate';
 import Button from '../shared/Button';
 
-const ModerationActions = ({ opportunityId }) => {
+const ModerationActions = ({ opportunityId, onSuccess }) => {
   const moderateMutation = useModerate();
+
+  const handleAction = async (status) => {
+    await moderateMutation.mutateAsync({ id: opportunityId, status });
+    if (onSuccess) onSuccess();
+  };
 
   return (
     <div className="flex gap-2">
-      <Button 
-        variant="secondary" 
-        className="text-green-500 hover:bg-green-50 flex items-center gap-1 text-xs"
-        onClick={() => moderateMutation.mutate({ id: opportunityId, status: 'published' })}
+      <button 
+        className="hfas-btn-ghost text-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 flex items-center gap-2"
+        onClick={() => handleAction('ACTIVE')}
         disabled={moderateMutation.isLoading}
       >
-        <CheckCircle size={16} />
+        <span className="material-symbols-outlined text-[18px]">check_circle</span>
         Approve
-      </Button>
-      <Button 
-        variant="secondary" 
-        className="text-red-500 hover:bg-red-50 flex items-center gap-1 text-xs"
-        onClick={() => moderateMutation.mutate({ id: opportunityId, status: 'rejected' })}
+      </button>
+      <button 
+        className="hfas-btn-ghost text-accent-red hover:bg-red-50 dark:hover:bg-red-500/10 flex items-center gap-2"
+        onClick={() => handleAction('REJECTED')}
         disabled={moderateMutation.isLoading}
       >
-        <XCircle size={16} />
+        <span className="material-symbols-outlined text-[18px]">cancel</span>
         Reject
-      </Button>
+      </button>
     </div>
   );
 };

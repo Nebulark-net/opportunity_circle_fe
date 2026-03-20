@@ -51,16 +51,16 @@ const LoginPage = () => {
     };
 
     return (
-        <div className="w-full bg-white dark:bg-slate-900/50 p-8 rounded-xl shadow-2xl border border-slate-200 dark:border-slate-800">
+        <div className="w-full bg-white dark:bg-zinc-900/50 p-8 rounded-xl shadow-2xl border border-zinc-200 dark:border-zinc-800">
             <div className="text-center mb-8">
                 <h1 className="text-3xl font-black mb-2 dark:text-white">Welcome back</h1>
-                <p className="text-slate-500 dark:text-primary/70">Enter your details to access your account</p>
+                <p className="text-zinc-500 dark:text-primary/70">Enter your details to access your account</p>
             </div>
             
             <div className="space-y-4 mb-6">
                 <button
                     onClick={() => handleOAuthLogin('google')}
-                    className="flex w-full items-center justify-center gap-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 py-3 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 transition-all font-medium text-slate-700 dark:text-slate-200 shadow-sm"
+                    className="flex w-full items-center justify-center gap-3 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 py-3 rounded-lg hover:bg-slate-50 dark:hover:bg-zinc-700 transition-all font-medium text-zinc-700 dark:text-zinc-200 shadow-sm"
                     type="button"
                 >
                     <img
@@ -72,7 +72,7 @@ const LoginPage = () => {
                 </button>
                 <button
                     onClick={() => handleOAuthLogin('github')}
-                    className="flex w-full items-center justify-center gap-3 bg-slate-900 dark:bg-slate-800 border border-slate-800 dark:border-slate-700 py-3 rounded-lg hover:bg-slate-800 dark:hover:bg-slate-700 transition-all font-medium text-white dark:text-slate-200 shadow-sm"
+                    className="flex w-full items-center justify-center gap-3 bg-zinc-900 dark:bg-zinc-800 border border-zinc-800 dark:border-zinc-700 py-3 rounded-lg hover:bg-zinc-800 dark:hover:bg-zinc-700 transition-all font-medium text-white dark:text-zinc-200 shadow-sm"
                     type="button"
                 >
                     <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24" aria-hidden="true">
@@ -84,22 +84,22 @@ const LoginPage = () => {
 
             <div className="relative mb-6">
                 <div className="absolute inset-0 flex items-center">
-                    <span className="w-full border-t border-slate-200 dark:border-slate-800"></span>
+                    <span className="w-full border-t border-zinc-200 dark:border-zinc-800"></span>
                 </div>
                 <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-white dark:bg-background-dark px-4 text-slate-500 font-semibold tracking-widest">Or continue with email</span>
+                    <span className="bg-white dark:bg-zinc-950 px-4 text-zinc-500 font-semibold tracking-widest">Or continue with email</span>
                 </div>
             </div>
 
             <form className="space-y-4" onSubmit={handleSubmit}>
                 <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5 ml-1">Email Address</label>
+                    <label className="block text-sm font-medium text-zinc-700 dark:text-slate-300 mb-1.5 ml-1">Email Address</label>
                     <div className="relative">
-                        <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-[20px]">
+                        <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 text-[20px]">
                             mail
                         </span>
                         <input
-                            className="w-full px-4 py-3 pl-12 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all placeholder:text-slate-400 dark:placeholder:text-slate-500"
+                            className="w-full px-4 py-3 pl-12 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-slate-50 dark:bg-zinc-800/50 text-zinc-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all placeholder:text-zinc-400 dark:placeholder:text-zinc-500"
                             placeholder="name@company.com"
                             type="email"
                             value={email}
@@ -109,24 +109,24 @@ const LoginPage = () => {
                 </div>
                 <div>
                     <div className="flex items-center justify-between mb-1.5 ml-1">
-                        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Password</label>
+                        <label className="block text-sm font-medium text-zinc-700 dark:text-slate-300">Password</label>
                         <Link className="text-xs font-semibold text-primary hover:underline" to="/forgot-password">
                             Forgot password?
                         </Link>
                     </div>
                     <div className="relative group">
-                        <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-[20px]">
+                        <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 text-[20px]">
                             lock
                         </span>
                         <input
-                            className="w-full px-4 py-3 pl-12 pr-12 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all placeholder:text-slate-400 dark:placeholder:text-slate-500"
+                            className="w-full px-4 py-3 pl-12 pr-12 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-slate-50 dark:bg-zinc-800/50 text-zinc-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all placeholder:text-zinc-400 dark:placeholder:text-zinc-500"
                             placeholder="••••••••"
                             type={showPassword ? 'text' : 'password'}
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                         />
                         <button
-                            className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-primary transition-colors"
+                            className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-primary transition-colors"
                             type="button"
                             onClick={() => setShowPassword(!showPassword)}
                         >
@@ -138,11 +138,11 @@ const LoginPage = () => {
                 </div>
                 <div className="flex items-center space-x-2 pt-1">
                     <input
-                        className="w-4 h-4 rounded border-slate-300 dark:border-slate-700 text-primary focus:ring-primary/50 bg-slate-50 dark:bg-slate-800/50"
+                        className="w-4 h-4 rounded border-slate-300 dark:border-zinc-700 text-primary focus:ring-primary/50 bg-slate-50 dark:bg-zinc-800/50"
                         id="remember"
                         type="checkbox"
                     />
-                    <label className="text-sm font-medium text-slate-600 dark:text-slate-400" htmlFor="remember">
+                    <label className="text-sm font-medium text-slate-600 dark:text-zinc-400" htmlFor="remember">
                         Remember me for 30 days
                     </label>
                 </div>
@@ -154,14 +154,14 @@ const LoginPage = () => {
                     {isLoading ? 'Signing In...' : 'Sign In'}
                 </button>
             </form>
-            <div className="text-center pt-6 mt-6 border-t border-slate-200 dark:border-slate-800">
-                <p className="text-sm text-slate-600 dark:text-slate-400">
+            <div className="text-center pt-6 mt-6 border-t border-zinc-200 dark:border-zinc-800">
+                <p className="text-sm text-slate-600 dark:text-zinc-400">
                     New to Opportunity Circle?
                     <Link className="text-primary font-bold hover:underline ml-1" to="/register">
                         Create an account
                     </Link>
                 </p>
-                <div className="flex justify-center gap-4 mt-4 text-xs font-semibold text-slate-400 dark:text-slate-500">
+                <div className="flex justify-center gap-4 mt-4 text-xs font-semibold text-zinc-400 dark:text-zinc-500">
                     <Link to="#" className="hover:text-primary transition-colors">Privacy Policy</Link>
                     <Link to="#" className="hover:text-primary transition-colors">Terms of Service</Link>
                 </div>

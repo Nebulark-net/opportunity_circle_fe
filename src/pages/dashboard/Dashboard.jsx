@@ -21,11 +21,11 @@ const DashboardLayout = () => {
                             location.pathname.includes('/resources');
 
     return (
-        <div className="relative flex h-screen w-full flex-col overflow-hidden text-slate-900 dark:text-slate-100 bg-background-light dark:bg-background-dark font-display antialiased">
+        <div className="relative flex h-screen w-full flex-col overflow-hidden text-zinc-100 bg-zinc-950 font-display antialiased">
             <Header />
             <div className="flex flex-1 overflow-hidden relative">
                 <Sidebar />
-                <main className={`flex-1 overflow-y-auto bg-background-light dark:bg-background-dark custom-scrollbar ${isCenteredPage ? 'flex flex-col' : ''}`}>
+                <main className={`flex-1 overflow-y-auto bg-zinc-950 custom-scrollbar ${isCenteredPage ? 'flex flex-col' : ''}`}>
                     <div className={isCenteredPage ? "w-full max-w-7xl mx-auto" : "w-full"}>
                         <Outlet />
                     </div>

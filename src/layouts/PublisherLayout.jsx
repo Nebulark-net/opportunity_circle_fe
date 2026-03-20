@@ -5,11 +5,11 @@ import { Outlet } from 'react-router-dom';
 
 const PublisherLayout = () => {
     return (
-        <div className="relative flex h-screen w-full flex-col overflow-x-hidden bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
+        <div className="relative flex h-screen w-full flex-col overflow-x-hidden bg-zinc-950 text-zinc-100 font-sans">
             <Header />
             <div className="flex flex-1 overflow-hidden relative">
                 <PublisherSidebar />
-                <main className="flex-1 overflow-y-auto bg-slate-50 dark:bg-background-dark/50">
+                <main className="flex-1 overflow-y-auto bg-zinc-950">
                     <Outlet />
                 </main>
             </div>

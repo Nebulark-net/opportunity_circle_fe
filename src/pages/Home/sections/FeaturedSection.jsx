@@ -5,25 +5,25 @@ import api from '../../../lib/api';
 
 // Simplified Opportunity Card for the landing page
 const OpportunityCard = ({ title, company, image, location }) => (
-  <div className="group flex flex-col bg-white dark:bg-surface-dark rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all">
+  <div className="group flex flex-col bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-100 dark:border-zinc-800 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all">
     <div className="relative h-48 w-full overflow-hidden rounded-t-2xl">
       <div className="absolute top-3 right-3 z-10">
-        <button className="h-9 w-9 rounded-full bg-white/90 dark:bg-background-dark/90 flex items-center justify-center text-slate-600 dark:text-slate-100 hover:text-primary transition-colors">
+        <button className="h-9 w-9 rounded-full bg-white/90 dark:bg-zinc-950/90 flex items-center justify-center text-zinc-600 dark:text-zinc-100 hover:text-primary transition-colors">
           <span className="material-symbols-outlined text-xl">bookmark</span>
         </button>
       </div>
       <div 
-        className="w-full h-full bg-slate-200 bg-cover bg-center" 
+        className="w-full h-full bg-zinc-200 bg-cover bg-center" 
         style={{ backgroundImage: `url(${image})` }}
         aria-label={title}
       ></div>
     </div>
     <div className="p-5 flex flex-col gap-3">
       <div className="flex flex-col">
-        <h3 className="font-bold text-lg leading-snug group-hover:text-primary transition-colors text-slate-900 dark:text-white">{title}</h3>
+        <h3 className="font-bold text-lg leading-snug group-hover:text-primary transition-colors text-zinc-900 dark:text-white">{title}</h3>
         <p className="text-sm font-medium text-accent-muted mt-1">{company}</p>
       </div>
-      <div className="flex items-center gap-2 text-xs font-semibold text-accent-muted bg-slate-50 dark:bg-background-dark/50 px-3 py-2 rounded-lg w-fit">
+      <div className="flex items-center gap-2 text-xs font-semibold text-accent-muted bg-zinc-50 dark:bg-zinc-950/50 px-3 py-2 rounded-lg w-fit">
         <span className="material-symbols-outlined text-sm">location_on</span>
         {location}
       </div>
@@ -32,12 +32,12 @@ const OpportunityCard = ({ title, company, image, location }) => (
 );
 
 const CardSkeleton = () => (
-    <div className="group flex flex-col bg-white dark:bg-surface-dark rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm animate-pulse">
-        <div className="relative h-48 w-full overflow-hidden rounded-t-2xl bg-slate-200 dark:bg-slate-700"></div>
+    <div className="group flex flex-col bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-100 dark:border-zinc-800 shadow-sm animate-pulse">
+        <div className="relative h-48 w-full overflow-hidden rounded-t-2xl bg-zinc-200 dark:bg-zinc-700"></div>
         <div className="p-5 flex flex-col gap-4">
-            <div className="h-5 w-3/4 bg-slate-200 dark:bg-slate-700 rounded"></div>
-            <div className="h-4 w-1/2 bg-slate-200 dark:bg-slate-700 rounded"></div>
-            <div className="h-8 w-1/3 bg-slate-200 dark:bg-slate-700 rounded-lg"></div>
+            <div className="h-5 w-3/4 bg-zinc-200 dark:bg-zinc-700 rounded"></div>
+            <div className="h-4 w-1/2 bg-zinc-200 dark:bg-zinc-700 rounded"></div>
+            <div className="h-8 w-1/3 bg-zinc-200 dark:bg-zinc-700 rounded-lg"></div>
         </div>
     </div>
 );
@@ -60,7 +60,7 @@ const FeaturedSection = () => {
     <section className="max-w-7xl mx-auto px-6 py-20">
       <div className="flex items-center justify-between mb-10">
         <div className="flex flex-col gap-1">
-          <h2 className="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">Featured Opportunities</h2>
+          <h2 className="text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-white">Featured Opportunities</h2>
           <p className="text-accent-muted font-medium">Hand-picked excellence for your career growth</p>
         </div>
         <Link className="flex items-center gap-2 text-primary font-bold hover:underline" to="/explore">

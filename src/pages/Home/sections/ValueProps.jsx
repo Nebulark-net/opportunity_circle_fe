@@ -22,23 +22,23 @@ const ValueProps = () => {
   ];
 
   return (
-    <section className="py-16 bg-white dark:bg-surface-dark/50 border-y border-slate-100 dark:border-border-dark/50">
+    <section className="py-16 bg-zinc-900/50 dark:zinc-500/50 border-y border-zinc-100 dark:border-zinc-800/50">
       <MaxContainer>
         <div className="text-center max-w-2xl mx-auto mb-12">
-          <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-4">Empowering the Next Generation</h2>
-          <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
+          <h2 className="text-3xl font-bold text-zinc-900 dark:text-white mb-4">Empowering the Next Generation</h2>
+          <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed">
             Opportunity Circle connects ambitious talent with world-class opportunities across the globe. We simplify the search so you can focus on applying.
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {features.map((feature, index) => (
-            <div key={index} className="p-6 rounded-card bg-slate-50 dark:bg-surface-dark border border-slate-200 dark:border-border-dark hover:shadow-md transition-shadow">
+            <div key={index} className="p-6 rounded-card bg-zinc-800 dark:bg-surface-dark border border-zinc-200 dark:border-border-dark hover:shadow-md transition-shadow">
               <div className="size-12 rounded-lg bg-primary/10 text-primary flex items-center justify-center mb-4">
                 {feature.icon}
               </div>
-              <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">{feature.title}</h3>
-              <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+              <h3 className="text-xl font-bold text-zinc-900 dark:text-white mb-2">{feature.title}</h3>
+              <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
                 {feature.description}
               </p>
             </div>

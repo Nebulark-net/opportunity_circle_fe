@@ -27,7 +27,7 @@ const ExplorePage = () => {
   }, [page]);
 
   return (
-    <div className="flex-1 bg-background-light dark:bg-background-dark min-h-screen flex flex-col">
+    <div className="flex-1 bg-zinc-50 dark:bg-zinc-950 min-h-screen flex flex-col">
       <ExploreHeader />
       
       <MaxContainer as="main" className="py-8 flex-1">

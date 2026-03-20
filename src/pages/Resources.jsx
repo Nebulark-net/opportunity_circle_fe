@@ -28,28 +28,28 @@ const Resources = () => {
     return (
         <div className="flex flex-col gap-8 p-6 animate-in fade-in duration-700">
             <div className="flex flex-col gap-2">
-                <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">Knowledge Base</h1>
-                <p className="text-slate-500 dark:text-slate-400 font-medium">Curated professional resources to accelerate your career trajectory.</p>
+                <h1 className="text-lg font-black text-zinc-100 uppercase tracking-[0.05em]">Knowledge Base</h1>
+                <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500 mt-1">Curated professional resources to accelerate your career trajectory.</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {resources.map((resource) => (
-                    <article key={resource.id} className="bg-white dark:bg-surface-dark rounded-2xl border border-slate-200 dark:border-border-dark shadow-sm p-6 flex flex-col gap-6 transition-all hover:border-primary/30 group">
+                    <article key={resource.id} className="bg-zinc-900 rounded-2xl border border-zinc-800 shadow-sm p-6 flex flex-col gap-6 transition-all hover:border-primary/30 group">
                         <div className="flex items-start justify-between">
-                            <div className="size-12 rounded-xl bg-slate-50 dark:bg-background-dark border border-slate-100 dark:border-border-dark flex items-center justify-center text-primary shadow-sm group-hover:scale-110 transition-transform">
+                            <div className="size-12 rounded-xl bg-zinc-950 border border-zinc-800 flex items-center justify-center text-primary shadow-sm group-hover:scale-110 transition-transform">
                                 <span className="material-symbols-outlined text-2xl">{resource.icon}</span>
                             </div>
-                            <span className="px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-[10px] font-black uppercase tracking-wider text-primary">
+                            <span className="px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-[10px] font-black uppercase tracking-[0.2em] text-primary">
                                 {resource.type}
                             </span>
                         </div>
                         
                         <div className="flex-1 space-y-2">
-                            <h3 className="text-lg font-bold text-slate-900 dark:text-white leading-tight group-hover:text-primary transition-colors">{resource.title}</h3>
-                            <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed line-clamp-2">{resource.description}</p>
+                            <h3 className="text-[13px] font-black uppercase tracking-wide text-zinc-100 leading-tight group-hover:text-primary transition-colors">{resource.title}</h3>
+                            <p className="text-[11px] font-medium text-zinc-400 leading-relaxed line-clamp-2 my-2">{resource.description}</p>
                         </div>
 
-                        <button className="w-full py-2.5 rounded-xl bg-slate-100 dark:bg-background-dark hover:bg-primary hover:text-white text-slate-700 dark:text-slate-300 text-xs font-bold uppercase tracking-widest transition-all flex items-center justify-center gap-2">
+                        <button className="w-full py-2.5 rounded-xl bg-zinc-800 hover:bg-primary hover:text-white text-zinc-400 text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2">
                             <span className="material-symbols-outlined text-[18px]">open_in_new</span>
                             Access Content
                         </button>

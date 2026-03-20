@@ -12,7 +12,7 @@ const NotificationDropdown = () => {
     const { data: response, isLoading } = useQuery({
         queryKey: ['notifications'],
         queryFn: () => userService.getNotifications(),
-        refetchInterval: 60000, // Refetch every minute
+        refetchInterval: 60000, 
     });
 
     const notifications = response?.data || [];
@@ -25,7 +25,6 @@ const NotificationDropdown = () => {
         },
     });
 
-    // Close on click outside
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -72,13 +71,13 @@ const NotificationDropdown = () => {
             <AnimatePresence>
                 {isOpen && (
                     <motion.div 
-                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                        transition={{ duration: 0.2 }}
-                        className="absolute right-0 mt-3 w-80 sm:w-96 bg-zinc-900 border border-zinc-800 rounded-2xl shadow-2xl z-50 overflow-hidden"
+                        initial={{ opacity: 0, y: 12, scale: 0.96, filter: 'blur(8px)' }}
+                        animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
+                        exit={{ opacity: 0, y: 8, scale: 0.98, filter: 'blur(8px)' }}
+                        transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                        className="absolute right-0 mt-4 w-80 sm:w-96 bg-zinc-900 border border-zinc-800 rounded-2xl shadow-2xl z-50 overflow-hidden"
                     >
-                        <div className="p-4 border-b border-zinc-800 flex items-center justify-between bg-zinc-950/40">
+                        <div className="p-5 border-b border-zinc-800 flex items-center justify-between bg-zinc-950/40">
                             <h3 className="text-xs font-black text-zinc-100 uppercase tracking-widest">Notification Registry</h3>
                             {unreadCount > 0 && (
                                 <span className="text-[9px] font-black px-2 py-0.5 bg-zinc-800 text-zinc-300 rounded-md border border-zinc-700 uppercase tracking-[0.2em]">

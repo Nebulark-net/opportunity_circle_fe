@@ -14,11 +14,11 @@ const OpportunityGrid = ({ opportunities, totalPages, currentPage, onPageChange 
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-center gap-2 pt-8 border-t border-slate-100 dark:border-border-dark">
+        <div className="flex items-center justify-center gap-2 pt-8 border-t border-zinc-100 dark:zinc-800">
           <button
             onClick={() => onPageChange(currentPage - 1)}
             disabled={currentPage === 1}
-            className="p-2 rounded-lg border border-slate-200 dark:border-border-dark disabled:opacity-30 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
+            className="p-2 rounded-lg border border-zinc-200 dark:zinc-800 disabled:opacity-30 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
           >
             <ChevronLeft size={20} />
           </button>
@@ -40,7 +40,7 @@ const OpportunityGrid = ({ opportunities, totalPages, currentPage, onPageChange 
                   className={`size-10 rounded-lg text-sm font-bold transition-all ${
                     currentPage === pageNum
                       ? 'bg-primary text-white shadow-md'
-                      : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5'
+                      : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-white/5'
                   }`}
                 >
                   {pageNum}
@@ -52,7 +52,7 @@ const OpportunityGrid = ({ opportunities, totalPages, currentPage, onPageChange 
           <button
             onClick={() => onPageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
-            className="p-2 rounded-lg border border-slate-200 dark:border-border-dark disabled:opacity-30 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
+            className="p-2 rounded-lg border border-zinc-200 dark:zinc-800 disabled:opacity-30 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
           >
             <ChevronRight size={20} />
           </button>

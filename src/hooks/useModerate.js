@@ -10,12 +10,33 @@ export const useModerate = () => {
       const response = await api.patch(`/opportunities/${id}/status`, { status });
       return response.data;
     },
-    onSuccess: (_, variables) => {
-      toast.success(`Opportunity ${variables.status} successfully!`);
-      queryClient.invalidateQueries(['moderation-queue']);
+    onMutate: async ({ id }) => {
+      await queryClient.cancelQueries({ queryKey: ['moderation-queue'] });
+      const previousQueue = queryClient.getQueryData(['moderation-queue']);
+
+      queryClient.setQueryData(['moderation-queue'], (old) => {
+        if (!old) return old;
+        return {
+          ...old,
+          data: {
+            ...old.data,
+            opportunities: old.data.opportunities.filter(opp => opp._id !== id)
+          }
+        };
+      });
+
+      return { previousQueue };
     },
-    onError: (error) => {
-      toast.error(error.response?.data?.message || 'Moderation action failed');
+    onError: (error, variables, context) => {
+      queryClient.setQueryData(['moderation-queue'], context.previousQueue);
+      toast.error(error.response?.data?.message || 'Moderation action failed. Asset stream preserved.');
+    },
+    onSuccess: (_, variables) => {
+      toast.success(`Opportunity ${variables.status === 'ACTIVE' ? 'authorized' : 'rejected'} successfully!`);
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['moderation-queue'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-stats'] });
     },
   });
 };

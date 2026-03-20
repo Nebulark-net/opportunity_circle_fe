@@ -1,6 +1,7 @@
 import React from 'react';
 import { NavLink, Link } from 'react-router-dom';
 import { useAuthStore } from '../../stores/authStore';
+import UserDropdown from '../dashboard/UserDropdown';
 
 const Header = () => {
     const { isAuthenticated, user } = useAuthStore();
@@ -20,12 +21,15 @@ const Header = () => {
                 </nav>
                 <div className="flex items-center gap-4">
                     {isAuthenticated ? (
-                        <Link 
-                            to={user?.role === 'PUBLISHER' ? '/publisher/dashboard' : '/dashboard'} 
-                            className="px-5 py-2.5 bg-primary hover:bg-primary/90 text-white text-sm font-bold rounded-lg shadow-lg shadow-primary/20 transition-all"
-                        >
-                            Dashboard
-                        </Link>
+                        <>
+                            <Link 
+                                to={user?.role === 'PUBLISHER' ? '/publisher/dashboard' : '/dashboard'} 
+                                className="hidden lg:flex px-5 py-2.5 bg-primary hover:bg-primary/90 text-white text-sm font-bold rounded-lg shadow-lg shadow-primary/20 transition-all"
+                            >
+                                Dashboard
+                            </Link>
+                            <UserDropdown />
+                        </>
                     ) : (
                         <>
                             <Link to="/login" className="px-5 py-2 text-sm font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-surface-dark rounded-lg transition-all">

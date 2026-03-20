@@ -2,11 +2,12 @@ import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { publisherService } from '../../services/publisher.service';
-
+import { useAuthStore } from '../../stores/authStore';
 import { motion } from 'framer-motion';
 
 const PublisherDashboard = () => {
   const [activeTab, setActiveTab] = useState('All Listings');
+  const { user } = useAuthStore();
 
   const { data: listingsData, isLoading: listingsLoading } = useQuery({
     queryKey: ['publisher-listings'],
@@ -48,15 +49,15 @@ const PublisherDashboard = () => {
 
   const getStatusBadge = (status) => {
     const configs = {
-      ACTIVE: { bg: 'bg-emerald-500/10', text: 'text-emerald-500', label: 'Live' },
-      PENDING: { bg: 'bg-amber-500/10', text: 'text-amber-500', label: 'In Review' },
-      DRAFT: { bg: 'bg-slate-500/10', text: 'text-slate-500', label: 'Draft' },
-      EXPIRED: { bg: 'bg-rose-500/10', text: 'text-rose-500', label: 'Expired' },
-      CLOSED: { bg: 'bg-rose-500/10', text: 'text-rose-500', label: 'Closed' }
+      ACTIVE: { bg: 'bg-emerald-500/10', text: 'text-emerald-400', label: 'Live' },
+      PENDING: { bg: 'bg-amber-500/10', text: 'text-amber-400', label: 'In Review' },
+      DRAFT: { bg: 'bg-zinc-800/50', text: 'text-zinc-500', label: 'Draft' },
+      EXPIRED: { bg: 'bg-red-500/10', text: 'text-red-400', label: 'Expired' },
+      CLOSED: { bg: 'bg-red-500/10', text: 'text-red-400', label: 'Closed' }
     };
-    const config = configs[status] || { bg: 'bg-slate-500/10', text: 'text-slate-500', label: status };
+    const config = configs[status] || { bg: 'bg-zinc-800/50', text: 'text-zinc-500', label: status };
     return (
-      <span className={`px-2.5 py-1 rounded-md text-[10px] font-black uppercase tracking-wider ${config.bg} ${config.text}`}>
+      <span className={`px-2.5 py-1 rounded-md text-[10px] font-black uppercase tracking-wider ${config.bg} ${config.text} border border-white/5`}>
         {config.label}
       </span>
     );
@@ -70,10 +71,19 @@ const PublisherDashboard = () => {
       className="max-w-7xl mx-auto px-6 py-8 flex flex-col gap-10"
     >
       {/* Premium Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-slate-200 dark:border-slate-800 pb-8">
-        <div className="flex flex-col gap-2">
-          <h1 className="text-4xl font-black text-slate-900 dark:text-white tracking-tighter uppercase leading-none">Management Console</h1>
-          <p className="text-slate-500 dark:text-slate-400 font-medium text-lg">Orchestrate your early-career opportunities and track global impact.</p>
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-zinc-800 pb-8">
+        <div className="flex items-center gap-6">
+          <div className="size-20 shrink-0 rounded-2xl bg-zinc-900 border border-zinc-800 overflow-hidden flex items-center justify-center text-zinc-600 shadow-xl p-1">
+             {user?.profilePhotoUrl ? (
+                <img src={user.profilePhotoUrl} alt="Organization Logo" className="w-full h-full object-cover rounded-xl" crossOrigin="anonymous" referrerPolicy="no-referrer" />
+             ) : (
+                <span className="material-symbols-outlined text-[32px]">corporate_fare</span>
+             )}
+          </div>
+          <div className="flex flex-col gap-2">
+            <h1 className="text-4xl font-black text-zinc-100 tracking-tighter uppercase leading-none">Management Console</h1>
+            <p className="text-zinc-500 font-medium text-lg uppercase tracking-tight">Orchestrate your early-career opportunities and track global impact.</p>
+          </div>
         </div>
         <Link to="/publisher/create" className="flex items-center justify-center gap-3 rounded-2xl bg-primary px-8 py-4 text-white text-sm font-black uppercase tracking-widest hover:bg-primary/90 transition-all shadow-2xl shadow-primary/30 active:scale-95 whitespace-nowrap">
           <span className="material-symbols-outlined font-black">add</span>
@@ -92,15 +102,15 @@ const PublisherDashboard = () => {
           <motion.div 
             key={i}
             variants={itemVariants}
-            className="group relative bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xl overflow-hidden"
+            className="group relative bg-zinc-900 p-6 rounded-3xl border border-zinc-800 shadow-xl overflow-hidden"
           >
-            <div className={`absolute top-0 right-0 p-4 opacity-5 group-hover:scale-110 transition-transform`}>
+            <div className={`absolute top-0 right-0 p-4 opacity-5 group-hover:scale-110 transition-transform text-white`}>
               <span className="material-symbols-outlined text-6xl">{item.icon}</span>
             </div>
-            <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-4">{item.label}</p>
+            <p className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em] mb-4">{item.label}</p>
             <div className="flex items-baseline justify-between pt-2">
-              <h3 className="text-3xl font-black text-slate-900 dark:text-white tracking-tighter">{statsLoading ? '...' : item.value}</h3>
-              <span className={`text-[10px] font-black text-${item.accent}-500 uppercase bg-${item.accent}-500/5 px-2 py-0.5 rounded`}>{item.trend}</span>
+              <h3 className="text-3xl font-black text-zinc-100 tracking-tighter">{statsLoading ? '...' : item.value}</h3>
+              <span className={`text-[10px] font-black text-zinc-400 uppercase bg-zinc-800 px-2 py-0.5 rounded border border-zinc-700`}>{item.trend}</span>
             </div>
           </motion.div>
         ))}
@@ -108,7 +118,7 @@ const PublisherDashboard = () => {
 
       {/* Navigation & Listings Hub */}
       <div className="flex flex-col gap-6">
-        <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800">
+        <div className="flex items-center justify-between border-b border-zinc-800">
           <div className="flex gap-10 overflow-x-auto no-scrollbar">
             {tabs.map(tab => (
               <button 
@@ -117,7 +127,7 @@ const PublisherDashboard = () => {
                 className={`pb-4 px-1 text-xs font-black uppercase tracking-[0.15em] transition-all relative ${
                   activeTab === tab 
                     ? 'text-primary' 
-                    : 'text-slate-400 dark:text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
+                    : 'text-zinc-500 hover:text-zinc-200'
                 }`}
               >
                 {tab}
@@ -130,23 +140,25 @@ const PublisherDashboard = () => {
         </div>
 
         {/* Professional Listings Table */}
-        <div className="bg-white dark:bg-slate-900 rounded-[32px] border border-slate-200 dark:border-slate-800 overflow-hidden shadow-2xl backdrop-blur-xl">
+        <div className="bg-zinc-900 rounded-[32px] border border-zinc-800 overflow-hidden shadow-2xl backdrop-blur-xl">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-slate-50/50 dark:bg-slate-800/30 border-b border-slate-200 dark:border-slate-800">
-                  <th className="px-8 py-5 text-[10px] font-black text-slate-500 uppercase tracking-widest">Listing Protocol</th>
-                  <th className="px-8 py-5 text-[10px] font-black text-slate-500 uppercase tracking-widest text-center">Engagement</th>
-                  <th className="px-8 py-5 text-[10px] font-black text-slate-500 uppercase tracking-widest text-center">Status</th>
-                  <th className="px-8 py-5 text-[10px] font-black text-slate-500 uppercase tracking-widest text-right">Actions</th>
+                <tr className="bg-zinc-800/20 border-b border-zinc-800/50">
+                  <th className="px-8 py-5 text-[10px] font-black text-zinc-500 uppercase tracking-widest">Listing Protocol</th>
+                  <th className="px-8 py-5 text-[10px] font-black text-zinc-500 uppercase tracking-widest text-center">Engagement</th>
+                  <th className="px-8 py-5 text-[10px] font-black text-zinc-500 uppercase tracking-widest text-center">Status</th>
+                  <th className="px-8 py-5 text-[10px] font-black text-zinc-500 uppercase tracking-widest text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+              <tbody className="divide-y divide-zinc-800/30">
                 {listingsLoading ? (
                   <tr>
                     <td colSpan="4" className="px-8 py-20 text-center">
-                      <div className="animate-spin size-8 border-4 border-primary border-t-transparent rounded-full mx-auto"></div>
-                      <p className="mt-4 text-sm font-bold text-slate-500 uppercase tracking-widest">Initalizing Streams...</p>
+                      <div className="flex flex-col items-center gap-4 text-zinc-500 animate-pulse">
+                        <span className="material-symbols-outlined text-4xl">radar</span>
+                        <p className="mt-4 text-sm font-bold uppercase tracking-widest">Initalizing Streams...</p>
+                      </div>
                     </td>
                   </tr>
                 ) : filteredListings.length > 0 ? (
@@ -155,22 +167,22 @@ const PublisherDashboard = () => {
                       key={listing._id}
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
-                      className="group hover:bg-slate-50/50 dark:hover:bg-slate-800/20 transition-all"
+                      className="group hover:bg-zinc-800/20 transition-all"
                     >
                       <td className="px-8 py-6">
                         <div className="flex items-center gap-4">
-                          <div className="size-14 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center overflow-hidden shrink-0 border border-slate-200 dark:border-slate-700 group-hover:border-primary/50 transition-colors shadow-sm">
+                          <div className="size-14 rounded-2xl bg-zinc-800 flex items-center justify-center overflow-hidden shrink-0 border border-zinc-700 group-hover:border-primary/50 transition-colors shadow-sm">
                             {listing.coverImage ? (
-                               <img src={listing.coverImage} alt={listing.title} className="w-full h-full object-cover" />
+                               <img src={listing.coverImage} alt={listing.title} className="w-full h-full object-cover" crossOrigin="anonymous" referrerPolicy="no-referrer" />
                             ) : (
-                               <span className="material-symbols-outlined text-slate-400 text-2xl">{listing.type === 'SCHOLARSHIP' ? 'school' : 'work'}</span>
+                               <span className="material-symbols-outlined text-zinc-600 text-2xl">{listing.type === 'SCHOLARSHIP' ? 'school' : 'work'}</span>
                             )}
                           </div>
                           <div className="flex flex-col gap-0.5">
-                            <p className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-tight line-clamp-1">{listing.title?.en || listing.title}</p>
+                            <p className="text-sm font-black text-zinc-100 uppercase tracking-tight line-clamp-1">{listing.title?.en || listing.title}</p>
                             <div className="flex items-center gap-3">
                               <span className="text-[10px] font-bold text-primary px-1.5 py-0.5 bg-primary/5 rounded border border-primary/10 uppercase">{listing.type}</span>
-                              <span className="text-[10px] font-medium text-slate-500">{new Date(listing.createdAt).toLocaleDateString()}</span>
+                              <span className="text-[10px] font-medium text-zinc-500">{new Date(listing.createdAt).toLocaleDateString()}</span>
                             </div>
                           </div>
                         </div>
@@ -179,13 +191,13 @@ const PublisherDashboard = () => {
                         <div className="flex flex-col items-center gap-1">
                           <div className="flex items-center gap-4">
                             <div className="flex flex-col items-center">
-                              <span className="text-xs font-black text-slate-900 dark:text-white">{listing.views || 0}</span>
-                              <span className="text-[9px] font-bold text-slate-400 uppercase">Views</span>
+                              <span className="text-xs font-black text-zinc-100">{listing.views || 0}</span>
+                              <span className="text-[9px] font-bold text-zinc-500 uppercase">Views</span>
                             </div>
-                            <div className="w-[1px] h-6 bg-slate-200 dark:bg-slate-700"></div>
+                            <div className="w-[1px] h-6 bg-zinc-800"></div>
                             <div className="flex flex-col items-center">
                               <span className="text-xs font-black text-emerald-500">{listing.applicantCount || 0}</span>
-                              <span className="text-[9px] font-bold text-slate-400 uppercase">Applied</span>
+                              <span className="text-[9px] font-bold text-zinc-500 uppercase">Applied</span>
                             </div>
                           </div>
                         </div>
@@ -195,10 +207,10 @@ const PublisherDashboard = () => {
                       </td>
                       <td className="px-8 py-6 text-right">
                         <div className="flex items-center justify-end gap-2">
-                          <Link to={`/opportunity/${listing._id}`} className="size-10 rounded-xl flex items-center justify-center text-slate-400 hover:text-primary hover:bg-primary/10 transition-all">
+                          <Link to={`/opportunity/${listing._id}`} className="size-10 rounded-xl flex items-center justify-center text-zinc-500 hover:text-primary hover:bg-primary/10 transition-all border border-transparent hover:border-zinc-800">
                             <span className="material-symbols-outlined text-[20px]">visibility</span>
                           </Link>
-                          <Link to={`/publisher/edit/${listing._id}`} className="size-10 rounded-xl flex items-center justify-center text-slate-400 hover:text-emerald-500 hover:bg-emerald-500/10 transition-all">
+                          <Link to={`/publisher/edit/${listing._id}`} className="size-10 rounded-xl flex items-center justify-center text-zinc-500 hover:text-emerald-500 hover:bg-emerald-500/10 transition-all border border-transparent hover:border-zinc-800">
                             <span className="material-symbols-outlined text-[20px]">edit</span>
                           </Link>
                         </div>
@@ -207,12 +219,12 @@ const PublisherDashboard = () => {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="4" className="px-8 py-32 text-center">
-                      <div className="size-20 bg-slate-100 dark:bg-slate-800 rounded-3xl flex items-center justify-center mx-auto mb-6">
-                        <span className="material-symbols-outlined text-4xl text-slate-300">inventory_2</span>
+                    <td colSpan="4" className="px-8 py-32 text-center text-zinc-500">
+                      <div className="size-20 bg-zinc-800 rounded-3xl flex items-center justify-center mx-auto mb-6 border border-zinc-700">
+                        <span className="material-symbols-outlined text-4xl text-zinc-600">inventory_2</span>
                       </div>
-                      <h3 className="text-xl font-black text-slate-900 dark:text-white uppercase tracking-tighter">No Protocols Detected</h3>
-                      <p className="text-slate-500 dark:text-slate-400 mt-2 max-w-xs mx-auto text-sm">You haven't deployed any opportunities under the {activeTab} category yet.</p>
+                      <h3 className="text-xl font-black text-zinc-100 uppercase tracking-tighter">No Protocols Detected</h3>
+                      <p className="text-zinc-500 mt-2 max-w-xs mx-auto text-sm">You haven't deployed any opportunities under the {activeTab} category yet.</p>
                       <Link to="/publisher/create" className="mt-8 inline-flex items-center gap-2 text-primary font-black uppercase text-xs tracking-widest hover:gap-4 transition-all">
                         Deploy first listing <span className="material-symbols-outlined">arrow_forward</span>
                       </Link>

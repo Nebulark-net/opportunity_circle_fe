@@ -62,10 +62,10 @@ const RegisterPage = () => {
 
             {/* Main Container */}
             <div className="z-10 w-full relative">
-                <div className="bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 p-8 rounded-xl shadow-2xl backdrop-blur-sm">
+                <div className="bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 p-8 rounded-xl shadow-2xl backdrop-blur-sm">
                     <div className="mb-8">
-                        <h2 className="text-3xl font-black text-slate-900 dark:text-slate-100 mb-2">Create Account</h2>
-                        <p className="text-slate-600 dark:text-slate-400">Join thousands of professionals finding their next big move.</p>
+                        <h2 className="text-3xl font-black text-zinc-900 dark:text-zinc-100 mb-2">Create Account</h2>
+                        <p className="text-zinc-600 dark:text-zinc-400">Join thousands of professionals finding their next big move.</p>
                     </div>
 
                     {/* Role Selection Persona Cards */}
@@ -76,10 +76,10 @@ const RegisterPage = () => {
                             className={`flex flex-col items-center gap-3 p-4 rounded-xl border-2 transition-all ${
                                 role === 'SEEKER' 
                                     ? 'border-primary bg-primary/5 text-primary shadow-lg shadow-primary/10' 
-                                    : 'border-slate-100 dark:border-slate-800 text-slate-500 hover:border-slate-200'
+                                    : 'border-zinc-100 dark:border-zinc-800 text-zinc-500 hover:border-zinc-200'
                             }`}
                         >
-                            <div className={`size-12 rounded-full flex items-center justify-center ${role === 'SEEKER' ? 'bg-primary text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-400'}`}>
+                            <div className={`size-12 rounded-full flex items-center justify-center ${role === 'SEEKER' ? 'bg-primary text-white' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-400'}`}>
                                 <span className="material-symbols-outlined">search</span>
                             </div>
                             <div className="text-center">
@@ -94,10 +94,10 @@ const RegisterPage = () => {
                             className={`flex flex-col items-center gap-3 p-4 rounded-xl border-2 transition-all ${
                                 role === 'PUBLISHER' 
                                     ? 'border-primary bg-primary/5 text-primary shadow-lg shadow-primary/10' 
-                                    : 'border-slate-100 dark:border-slate-800 text-slate-500 hover:border-slate-200'
+                                    : 'border-zinc-100 dark:border-zinc-800 text-zinc-500 hover:border-zinc-200'
                             }`}
                         >
-                            <div className={`size-12 rounded-full flex items-center justify-center ${role === 'PUBLISHER' ? 'bg-primary text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-400'}`}>
+                            <div className={`size-12 rounded-full flex items-center justify-center ${role === 'PUBLISHER' ? 'bg-primary text-white' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-400'}`}>
                                 <span className="material-symbols-outlined">campaign</span>
                             </div>
                             <div className="text-center">
@@ -112,7 +112,7 @@ const RegisterPage = () => {
                         <div className="space-y-3 mb-6">
                             <button
                                 onClick={() => handleOAuthLogin('google')}
-                                className="flex w-full items-center justify-center gap-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 py-3 px-4 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all font-semibold shadow-sm"
+                                className="flex w-full items-center justify-center gap-3 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 py-3 px-4 text-zinc-700 dark:text-zinc-200 hover:bg-slate-50 dark:hover:bg-zinc-700 transition-all font-semibold shadow-sm"
                                 type="button"
                             >
                                 <img
@@ -124,7 +124,7 @@ const RegisterPage = () => {
                             </button>
                             <button
                                 onClick={() => handleOAuthLogin('github')}
-                                className="flex w-full items-center justify-center gap-3 rounded-lg border border-slate-800 dark:border-slate-700 bg-slate-900 dark:bg-slate-800 py-3 px-4 text-white dark:text-slate-200 hover:bg-slate-800 dark:hover:bg-slate-700 transition-all font-semibold shadow-sm"
+                                className="flex w-full items-center justify-center gap-3 rounded-lg border border-zinc-800 dark:border-zinc-700 bg-zinc-900 dark:bg-zinc-800 py-3 px-4 text-white dark:text-zinc-200 hover:bg-zinc-800 dark:hover:bg-zinc-700 transition-all font-semibold shadow-sm"
                                 type="button"
                             >
                                 <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24" aria-hidden="true">
@@ -135,18 +135,18 @@ const RegisterPage = () => {
                         </div>
                         
                         <div className="flex items-center gap-4 my-6">
-                            <div className="h-px flex-1 bg-slate-200 dark:bg-slate-800"></div>
-                            <span className="text-xs font-bold uppercase tracking-wider text-slate-400">or use email</span>
-                            <div className="h-px flex-1 bg-slate-200 dark:bg-slate-800"></div>
+                            <div className="h-px flex-1 bg-zinc-200 dark:bg-zinc-800"></div>
+                            <span className="text-xs font-bold uppercase tracking-wider text-zinc-400">or use email</span>
+                            <div className="h-px flex-1 bg-zinc-200 dark:bg-zinc-800"></div>
                         </div>
 
                         {/* Full Name */}
                         <div className="space-y-2">
-                            <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 ml-1">Full Name</label>
+                            <label className="text-sm font-semibold text-zinc-700 dark:text-slate-300 ml-1">Full Name</label>
                             <div className="relative">
-                                <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-[20px]">person</span>
+                                <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 text-[20px]">person</span>
                                 <input
-                                    className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 py-3.5 pl-12 pr-4 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all outline-none"
+                                    className="w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-slate-50 dark:bg-zinc-800/50 py-3.5 pl-12 pr-4 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all outline-none"
                                     placeholder="Jane Doe"
                                     type="text"
                                     value={fullName}
@@ -157,11 +157,11 @@ const RegisterPage = () => {
 
                         {/* Email */}
                         <div className="space-y-2">
-                            <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 ml-1">Email Address</label>
+                            <label className="text-sm font-semibold text-zinc-700 dark:text-slate-300 ml-1">Email Address</label>
                             <div className="relative">
-                                <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-[20px]">mail</span>
+                                <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 text-[20px]">mail</span>
                                 <input
-                                    className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 py-3.5 pl-12 pr-4 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all outline-none"
+                                    className="w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-slate-50 dark:bg-zinc-800/50 py-3.5 pl-12 pr-4 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all outline-none"
                                     placeholder="jane@example.com"
                                     type="email"
                                     value={email}
@@ -172,18 +172,18 @@ const RegisterPage = () => {
 
                         {/* Password */}
                         <div className="space-y-2">
-                            <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 ml-1">Password</label>
+                            <label className="text-sm font-semibold text-zinc-700 dark:text-slate-300 ml-1">Password</label>
                             <div className="relative">
-                                <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-[20px]">lock</span>
+                                <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 text-[20px]">lock</span>
                                 <input
-                                    className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 py-3.5 pl-12 pr-12 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all outline-none"
+                                    className="w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-slate-50 dark:bg-zinc-800/50 py-3.5 pl-12 pr-12 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all outline-none"
                                     placeholder="••••••••"
                                     type={showPassword ? 'text' : 'password'}
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                 />
                                 <button
-                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-primary transition-colors"
+                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-primary transition-colors"
                                     type="button"
                                     onClick={() => setShowPassword(!showPassword)}
                                 >
@@ -192,7 +192,7 @@ const RegisterPage = () => {
                                     </span>
                                 </button>
                             </div>
-                            <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 ml-1">Must be at least 8 characters with a number and symbol.</p>
+                            <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-1 ml-1">Must be at least 8 characters with a number and symbol.</p>
                         </div>
 
                         {/* Call to Action */}
@@ -205,8 +205,8 @@ const RegisterPage = () => {
                         </button>
                     </form>
 
-                    <div className="mt-8 pt-6 border-t border-slate-200 dark:border-slate-800 text-center">
-                        <p className="text-slate-600 dark:text-slate-400 text-sm">
+                    <div className="mt-8 pt-6 border-t border-zinc-200 dark:border-zinc-800 text-center">
+                        <p className="text-zinc-600 dark:text-zinc-400 text-sm">
                             Already have an account? 
                             <Link className="text-primary font-bold hover:underline transition-all ml-1" to="/login">Sign In</Link>
                         </p>
@@ -214,7 +214,7 @@ const RegisterPage = () => {
                 </div>
 
                 {/* Footer Links */}
-                <div className="mt-6 mb-12 flex justify-center gap-6 text-xs font-semibold text-slate-500 dark:text-slate-500">
+                <div className="mt-6 mb-12 flex justify-center gap-6 text-xs font-semibold text-zinc-500 dark:text-zinc-500">
                     <Link to="#" className="hover:text-primary transition-colors">Terms of Service</Link>
                     <Link to="#" className="hover:text-primary transition-colors">Privacy Policy</Link>
                     <Link to="#" className="hover:text-primary transition-colors">Help Center</Link>

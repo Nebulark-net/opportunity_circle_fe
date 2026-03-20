@@ -14,17 +14,17 @@ const SearchSection = () => {
     };
 
     return (
-        <section className="bg-slate-100 dark:bg-surface-dark/30 py-12">
+        <section className="bg-zinc-100 dark:bg-zinc-900/30 py-12">
             <div className="max-w-4xl mx-auto px-6">
                 <div className="flex flex-col gap-4 text-center mb-8">
-                    <h3 className="text-2xl font-bold text-slate-900 dark:text-white">Ready to find your next milestone?</h3>
+                    <h3 className="text-2xl font-bold text-zinc-900 dark:text-white">Ready to find your next milestone?</h3>
                 </div>
                 <form onSubmit={handleSearch} className="relative group">
                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                         <span className="material-symbols-outlined text-accent-muted group-focus-within:text-primary transition-colors">search</span>
                     </div>
                     <input 
-                        className="w-full pl-12 pr-4 py-5 bg-white dark:bg-surface-dark border-none rounded-2xl shadow-lg focus:ring-2 focus:ring-primary text-lg text-slate-900 dark:text-white dark:placeholder:text-accent-muted/50 transition-all" 
+                        className="w-full pl-12 pr-4 py-5 bg-white dark:bg-zinc-900 border-none rounded-2xl shadow-lg focus:ring-2 focus:ring-primary text-lg text-zinc-900 dark:text-white dark:placeholder:text-accent-muted/50 transition-all" 
                         placeholder="Search for scholarships, internships, or fellowships..." 
                         type="text"
                         value={searchQuery}

@@ -15,21 +15,21 @@ const ExploreHeader = () => {
   ];
 
   return (
-    <section className="bg-slate-100 dark:bg-slate-800/30 py-16 border-b border-slate-200 dark:border-slate-800">
+    <section className="bg-zinc-100 dark:bg-zinc-800/30 py-16 border-b border-zinc-200 dark:border-zinc-800">
       <div className="max-w-4xl mx-auto px-6">
         <div className="flex flex-col gap-4 text-center mb-10">
-          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white">Explore Opportunities</h1>
-          <p className="text-lg text-slate-600 dark:text-slate-400">Discover the perfect scholarship, internship, fellowship, or event to accelerate your career journey.</p>
+          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-zinc-900 dark:text-white">Explore Opportunities</h1>
+          <p className="text-lg text-zinc-600 dark:text-zinc-400">Discover the perfect scholarship, internship, fellowship, or event to accelerate your career journey.</p>
         </div>
 
         <div className="relative group mb-10">
           <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-            <span className="material-symbols-outlined text-slate-400 group-focus-within:text-primary transition-colors">search</span>
+            <span className="material-symbols-outlined text-zinc-400 group-focus-within:text-primary transition-colors">search</span>
           </div>
           <input 
             type="text"
             placeholder="Search for opportunities..." 
-            className="w-full pl-12 pr-24 py-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-lg focus:ring-2 focus:ring-primary text-lg text-slate-900 dark:text-white dark:placeholder:text-slate-500 transition-all outline-none"
+            className="w-full pl-12 pr-24 py-5 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-2xl shadow-lg focus:ring-2 focus:ring-primary text-lg text-zinc-900 dark:text-white dark:placeholder:text-zinc-500 transition-all outline-none"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -48,7 +48,7 @@ const ExploreHeader = () => {
               className={`px-6 py-2.5 font-bold rounded-full text-sm shadow-sm transition-all ${
                 filters.type === cat.value
                   ? 'bg-primary text-white shadow-md shadow-primary/20 scale-[1.02]'
-                  : 'bg-white dark:bg-[#15242b] border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:border-primary dark:hover:border-primary hover:text-primary dark:hover:text-primary'
+                  : 'bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 hover:border-primary dark:hover:border-primary hover:text-primary dark:hover:text-primary'
               }`}
             >
               {cat.label}

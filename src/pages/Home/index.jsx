@@ -9,7 +9,7 @@ import Header from '../../components/layout/Header';
 
 const HomePage = () => {
   return (
-    <div className="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 antialiased">
+    <div className="bg-zinc-50 dark:bg-zinc-950 font-display text-zinc-900 dark:text-zinc-100 antialiased">
         
         <main className="flex-1">
             <Hero />
