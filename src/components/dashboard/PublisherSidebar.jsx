@@ -116,9 +116,9 @@ const PublisherSidebar = () => {
               <div className="flex items-center justify-between mb-10">
                 <div className="flex items-center gap-3">
                   <div className="size-10 bg-primary/10 border border-primary/30 rounded-xl flex items-center justify-center shadow-lg">
-                    <span className="material-symbols-outlined text-primary text-[24px]">rocket_launch</span>
+                    <span className="material-symbols-outlined text-primary text-[24px]">explore</span>
                   </div>
-                  <h2 className="text-zinc-100 text-xl font-black tracking-tighter uppercase">Publisher</h2>
+                  <h2 className="text-zinc-100 text-[13px] font-black tracking-[0.1em] uppercase">OpportunityCircle</h2>
                 </div>
                 <button onClick={closeSidebar} className="size-10 rounded-xl flex items-center justify-center text-zinc-500 hover:bg-zinc-800 transition-all border border-zinc-800">
                   <span className="material-symbols-outlined">close</span>
