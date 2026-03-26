@@ -67,7 +67,10 @@ const Header = ({ onMenuToggle }) => {
 
             <div className="flex items-center gap-3 sm:gap-5">
                 <NotificationDropdown />
-                <Link to="/settings" className="hidden sm:flex size-9 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-500 hover:text-zinc-100 items-center justify-center transition-all">
+                <Link 
+                    to={user?.role === 'ADMIN' ? '/admin/settings' : (user?.role === 'PUBLISHER' ? '/publisher/settings' : '/dashboard/settings')} 
+                    className="hidden sm:flex size-9 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-500 hover:text-zinc-100 items-center justify-center transition-all"
+                >
                     <span className="material-symbols-outlined text-[20px]">settings</span>
                 </Link>
                 <div className="hidden sm:block h-6 w-px bg-zinc-800 mx-1"></div>

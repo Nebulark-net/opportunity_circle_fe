@@ -62,7 +62,7 @@ const Sidebar = ({ isOpen, onClose }) => {
             <div className="flex items-center justify-between lg:hidden mb-2">
                 <div className="text-primary flex items-center gap-2">
                     <span className="material-symbols-outlined text-[20px]">explore</span>
-                    <span className="text-[11px] font-black uppercase tracking-widest text-zinc-100">C-Circle</span>
+                    <span className="text-[11px] font-black uppercase tracking-widest text-zinc-100">OpportunityCircle</span>
                 </div>
                 <button 
                     onClick={onClose}
