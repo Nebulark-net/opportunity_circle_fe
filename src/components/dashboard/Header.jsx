@@ -65,12 +65,12 @@ const Header = ({ onMenuToggle }) => {
                 </nav>
             </div>
 
-            <div className="flex items-center gap-5">
+            <div className="flex items-center gap-3 sm:gap-5">
                 <NotificationDropdown />
-                <Link to="/settings" className="size-9 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-500 hover:text-zinc-100 flex items-center justify-center transition-all">
+                <Link to="/settings" className="hidden sm:flex size-9 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-500 hover:text-zinc-100 items-center justify-center transition-all">
                     <span className="material-symbols-outlined text-[20px]">settings</span>
                 </Link>
-                <div className="h-6 w-px bg-zinc-800 mx-1"></div>
+                <div className="hidden sm:block h-6 w-px bg-zinc-800 mx-1"></div>
                 
                 <UserDropdown />
             </div>

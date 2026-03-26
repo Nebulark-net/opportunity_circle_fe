@@ -1,20 +1,39 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 
 const useOpportunitySearch = (opportunities) => {
+  const [localQuery, setLocalQuery] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
+
+  // Debounce search query
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setSearchQuery(localQuery);
+    }, 500); // 500ms industrial standard delay
+
+    return () => clearTimeout(timer);
+  }, [localQuery]);
 
   const filteredOpportunities = useMemo(() => {
     if (!searchQuery) {
       return opportunities;
     }
-    return (opportunities || []).filter(opp => 
-      opp.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      opp.company.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      opp.description.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    const query = searchQuery.toLowerCase();
+    return (opportunities || []).filter(opp => {
+        const title = (typeof opp.title === 'object' ? opp.title.en : opp.title) || '';
+        const org = opp.organizationName || opp.company || '';
+        const desc = (typeof opp.description === 'object' ? opp.description.en : opp.description) || '';
+        
+        return title.toLowerCase().includes(query) ||
+               org.toLowerCase().includes(query) ||
+               desc.toLowerCase().includes(query);
+    });
   }, [opportunities, searchQuery]);
 
-  return { searchQuery, setSearchQuery, filteredOpportunities };
+  return { 
+    searchQuery: localQuery, 
+    setSearchQuery: setLocalQuery, 
+    filteredOpportunities 
+  };
 };
 
 export default useOpportunitySearch;

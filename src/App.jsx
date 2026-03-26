@@ -120,10 +120,10 @@ function App() {
             >
               <Route index element={<Navigate replace to="feed" />} />
               <Route path="feed" element={<Feed type="all" />} />
-              <Route path="internships" element={<Feed type="internship" />} />
-              <Route path="scholarships" element={<Feed type="scholarship" />} />
-              <Route path="fellowships" element={<Feed type="fellowship" />} />
-              <Route path="workshops" element={<Feed type="workshop" />} />
+              <Route path="internships" element={<Feed type="INTERNSHIP" />} />
+              <Route path="scholarships" element={<Feed type="SCHOLARSHIP" />} />
+              <Route path="fellowships" element={<Feed type="FELLOWSHIP" />} />
+              <Route path="workshops" element={<Feed type="WORKSHOP" />} />
               <Route path="applications" element={<Applications />} />
               <Route path="saved" element={<Saved />} />
               <Route path="resources" element={<Resources />} />

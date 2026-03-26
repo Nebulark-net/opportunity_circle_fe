@@ -38,6 +38,21 @@ export const userService = {
     const response = await api.patch(`/notifications/${id}/read`);
     return response.data;
   },
+
+  markAllNotificationsAsRead: async () => {
+    const response = await api.patch('/notifications/mark-all-read');
+    return response.data;
+  },
+  // Resources
+  getAllResources: async (params = {}) => {
+    const response = await api.get('/resources', { params });
+    return response.data;
+  },
+
+  getResourceById: async (id) => {
+    const response = await api.get(`/resources/${id}`);
+    return response.data;
+  },
 };
 
 export default userService;

@@ -25,6 +25,13 @@ const NotificationDropdown = () => {
         },
     });
 
+    const markAllAsReadMutation = useMutation({
+        mutationFn: userService.markAllNotificationsAsRead,
+        onSuccess: () => {
+            queryClient.invalidateQueries(['notifications']);
+        },
+    });
+
     // Close on click outside
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -134,9 +141,16 @@ const NotificationDropdown = () => {
                             )}
                         </div>
 
-                        <div className="p-4 border-t border-zinc-800 bg-zinc-950/40 text-center">
-                            <button className="text-[9px] font-black text-zinc-500 hover:text-primary uppercase tracking-[0.3em] transition-colors">
-                                Archive All Streams
+                        <div className="p-4 border-t border-zinc-800 bg-zinc-950/40 flex items-center justify-between">
+                            <button 
+                                onClick={() => markAllAsReadMutation.mutate()}
+                                disabled={notifications.length === 0 || markAllAsReadMutation.isPending}
+                                className="text-[9px] font-black text-zinc-500 hover:text-primary uppercase tracking-[0.3em] transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                            >
+                                {markAllAsReadMutation.isPending ? 'Archiving...' : 'Archive All Streams'}
+                            </button>
+                            <button className="text-[9px] font-black text-zinc-600 hover:text-zinc-300 uppercase tracking-[0.3em] transition-colors">
+                                Nexus History
                             </button>
                         </div>
                     </motion.div>

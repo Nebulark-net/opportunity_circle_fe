@@ -1,5 +1,5 @@
 import React from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import OpportunityCard from '../../components/dashboard/OpportunityCard';
 import api from '../../lib/api';
 import useOpportunitySearch from '../../hooks/useOpportunitySearch';
@@ -36,37 +36,94 @@ const FeedSkeleton = () => (
     </div>
 );
 
-const Feed = ({ type = '' }) => {
-    const { data, isLoading, error } = useQuery({
-        queryKey: ['opportunities', type],
-        queryFn: () => api.get('/opportunities', { params: { type: type !== 'all' ? type : undefined } }).then(res => res.data.data.opportunities)
+const Feed = ({ type = 'all' }) => {
+    const queryClient = useQueryClient();
+    const [educationLevel, setEducationLevel] = React.useState('all');
+    const [fundingFilter, setFundingFilter] = React.useState('all');
+
+    // Fetch Opportunities
+    const { data: opportunities, isLoading, error } = useQuery({
+        queryKey: ['opportunities', type, educationLevel, fundingFilter],
+        queryFn: () => api.get('/opportunities', { 
+            params: { 
+                type: type !== 'all' ? type : undefined,
+                educationLevel: educationLevel !== 'all' ? educationLevel : undefined,
+                fundingType: fundingFilter !== 'all' ? fundingFilter : undefined
+            } 
+        }).then(res => res.data.data.opportunities)
     });
 
-    const { searchQuery, setSearchQuery, filteredOpportunities } = useOpportunitySearch(data);
+    // Fetch User Context (Saved & Applied)
+    const { data: savedItems } = useQuery({
+        queryKey: ['saved-opportunities'],
+        queryFn: () => api.get('/seekers/saved-items').then(res => res.data.data || [])
+    });
+
+    const { data: applications } = useQuery({
+        queryKey: ['my-applications'],
+        queryFn: () => api.get('/seekers/applications').then(res => res.data.data || [])
+    });
+
+    // Save Toggle Mutation
+    const toggleSaveMutation = useMutation({
+        mutationFn: (opportunityId) => api.post('/seekers/toggle-save', { itemId: opportunityId, itemType: 'OPPORTUNITY' }),
+        onMutate: async (opportunityId) => {
+            await queryClient.cancelQueries(['saved-opportunities']);
+            const previousSaved = queryClient.getQueryData(['saved-opportunities']);
+            
+            queryClient.setQueryData(['saved-opportunities'], (old = []) => {
+                const exists = old.find(item => item._id === opportunityId);
+                if (exists) return old.filter(item => item._id !== opportunityId);
+                return [...old, { _id: opportunityId }]; // Optimistic add
+            });
+            
+            return { previousSaved };
+        },
+        onError: (err, id, context) => {
+            queryClient.setQueryData(['saved-opportunities'], context.previousSaved);
+        },
+        onSettled: () => {
+            queryClient.invalidateQueries(['saved-opportunities']);
+        }
+    });
+
+    const { searchQuery, setSearchQuery, filteredOpportunities } = useOpportunitySearch(opportunities);
+
+    // Filter helpers
+    const savedIds = new Set(savedItems?.map(item => item._id));
+    const appliedIds = new Set(applications?.map(app => app.opportunityId || app.opportunity?._id));
+
+    const educationLevels = ['all', 'UNDERGRADUATE', 'GRADUATE', 'PHD'];
+    const fundingTypes = ['all', 'FULL_FUNDING', 'PARTIAL_FUNDING', 'PAID', 'UNPAID'];
 
     return (
         <div className="w-full h-full flex flex-col">
             {/* Search and Action Bar */}
-            <div className="sticky top-0 z-20 bg-zinc-950/80 dark:bg-zinc-950/80 backdrop-blur-md border-b border-zinc-800 dark:border-zinc-800 px-8 py-4">
+            <div className="sticky top-0 z-20 bg-zinc-950/80 backdrop-blur-md border-b border-zinc-800 px-8 py-4">
                 <div className="max-w-5xl mx-auto flex flex-col gap-4">
                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                         <div className="flex flex-col">
-                            <h1 className="text-lg font-black uppercase tracking-[0.05em] text-zinc-100">
-                                {type === 'all' || !type ? 'Opportunity Feed' : `${type}s`}
+                            <h1 className="text-lg font-black uppercase tracking-[0.05em] text-zinc-100 italic">
+                                {type === 'all' || !type 
+                                    ? 'Central Intelligence Feed' 
+                                    : `${type.charAt(0) + type.slice(1).toLowerCase()} Nexus`}
                             </h1>
-                            {isLoading ? (
-                                <Skeleton className="h-4 w-48 mt-1" />
-                            ) : (
-                                <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500 mt-1">
-                                    {filteredOpportunities?.length || 0} active nodes
-                                </p>
-                            )}
+                            <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500 mt-1">
+                                {isLoading ? 'Scanning Spectrum...' : `${filteredOpportunities?.length || 0} active nodes calibrated`}
+                            </p>
                         </div>
                         <div className="flex items-center gap-3">
-                            <label className="text-[9px] font-black text-zinc-500 uppercase tracking-[0.2em]">Sort by:</label>
-                            <div className="flex items-center gap-2 bg-zinc-900 px-3 py-2 rounded-lg cursor-pointer hover:bg-zinc-800 transition-colors border border-zinc-800">
-                                <span className="text-[10px] font-black uppercase tracking-widest text-zinc-300">Newest First</span>
-                                <span className="material-symbols-outlined text-[18px] text-zinc-500">expand_more</span>
+                            <div className="flex bg-zinc-900 border border-zinc-800 rounded-lg p-1">
+                                {['newest', 'trending'].map(sort => (
+                                    <button 
+                                        key={sort}
+                                        className={`px-3 py-1.5 rounded-md text-[9px] font-black uppercase tracking-widest transition-all ${
+                                            sort === 'newest' ? 'bg-zinc-800 text-primary shadow-sm' : 'text-zinc-500 hover:text-zinc-300'
+                                        }`}
+                                    >
+                                        {sort}
+                                    </button>
+                                ))}
                             </div>
                         </div>
                     </div>
@@ -75,22 +132,34 @@ const Feed = ({ type = '' }) => {
                         <div className="flex-1 relative group">
                             <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500 group-focus-within:text-primary transition-colors">search</span>
                             <input
-                                className="w-full bg-zinc-900 border border-zinc-800 rounded-xl pl-12 pr-4 py-3 text-xs font-bold uppercase tracking-widest text-zinc-100 placeholder:text-zinc-600 focus:ring-2 focus:ring-primary/50 transition-all outline-none"
-                                placeholder="Search by keywords, companies, or titles..."
+                                className="w-full bg-zinc-900 border border-zinc-800 rounded-xl pl-12 pr-4 py-3 text-xs font-bold uppercase tracking-widest text-zinc-100 placeholder:text-zinc-600 focus:ring-1 focus:ring-primary/50 transition-all outline-none"
+                                placeholder="Query title, company, or keywords..."
                                 type="text"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                             />
                         </div>
                         <div className="flex gap-2">
-                            <button className="flex items-center gap-2 bg-zinc-900 border border-zinc-800 px-4 py-2 rounded-xl text-[10px] font-black text-zinc-400 uppercase tracking-widest hover:text-zinc-100 transition-colors">
-                                <span className="material-symbols-outlined text-[18px]">location_on</span>
-                                <span className="hidden sm:inline">Location</span>
-                            </button>
-                            <button className="flex items-center gap-2 bg-zinc-900 border border-zinc-800 px-4 py-2 rounded-xl text-[10px] font-black text-zinc-400 uppercase tracking-widest hover:text-zinc-100 transition-colors">
-                                <span className="material-symbols-outlined text-[18px]">filter_list</span>
-                                <span className="hidden sm:inline">Filters</span>
-                            </button>
+                            <select 
+                                className="bg-zinc-900 border border-zinc-800 px-4 py-2 rounded-xl text-[10px] font-black text-zinc-400 uppercase tracking-widest outline-none focus:border-primary/50"
+                                value={educationLevel}
+                                onChange={(e) => setEducationLevel(e.target.value)}
+                            >
+                                <option value="all">Degree: All</option>
+                                <option value="UNDERGRADUATE">Undergrad</option>
+                                <option value="GRADUATE">Graduate</option>
+                                <option value="PHD">PhD</option>
+                            </select>
+                            <select 
+                                className="bg-zinc-900 border border-zinc-800 px-4 py-2 rounded-xl text-[10px] font-black text-zinc-400 uppercase tracking-widest outline-none focus:border-primary/50"
+                                value={fundingFilter}
+                                onChange={(e) => setFundingFilter(e.target.value)}
+                            >
+                                <option value="all">Funding: Any</option>
+                                <option value="FULL_FUNDING">Full</option>
+                                <option value="PAID">Paid</option>
+                                <option value="STIPEND">Stipend</option>
+                            </select>
                         </div>
                     </div>
                 </div>
@@ -101,39 +170,41 @@ const Feed = ({ type = '' }) => {
                 {isLoading ? (
                     <FeedSkeleton />
                 ) : error ? (
-                    <div className="text-center py-20 bg-zinc-900 dark:bg-zinc-900 rounded-xl border border-red-500/20 dark:border-red-500/20 shadow-sm">
-                        <span className="material-symbols-outlined text-red-500 text-5xl mb-4">error</span>
-                        <p className="text-red-500 font-bold text-lg uppercase tracking-tight">Failed to load opportunities</p>
-                        <p className="text-zinc-500 dark:text-zinc-400 text-sm mt-1">Please check your connection and try again.</p>
+                    <div className="text-center py-20 bg-zinc-900 rounded-xl border border-red-500/10">
+                        <span className="material-symbols-outlined text-red-500 text-5xl mb-4 opacity-50">data_alert</span>
+                        <p className="text-red-500/80 font-black text-xs uppercase tracking-[0.3em]">Protocol Failure</p>
+                        <p className="text-zinc-600 font-black text-[9px] uppercase tracking-widest mt-2">Could not synchronize with central database.</p>
                     </div>
                 ) : filteredOpportunities?.length === 0 ? (
-                    <div className="text-center py-24 bg-zinc-900 dark:bg-zinc-900 rounded-xl border border-zinc-800 dark:border-zinc-800 flex flex-col items-center justify-center gap-4 shadow-sm">
-                         <div className="size-20 bg-zinc-800 dark:bg-zinc-800 rounded-full flex items-center justify-center text-zinc-500 dark:text-zinc-500 border border-zinc-700 dark:border-zinc-700">
-                            <span className="material-symbols-outlined text-4xl">search_off</span>
+                    <div className="text-center py-24 bg-zinc-900 rounded-xl border border-zinc-800 flex flex-col items-center justify-center gap-4">
+                         <div className="size-20 bg-zinc-950 rounded-full flex items-center justify-center text-zinc-700 border border-zinc-800">
+                            <span className="material-symbols-outlined text-4xl">inventory_2</span>
                         </div>
-                        <div>
-                            <p className="text-[13px] text-zinc-100 font-black tracking-widest uppercase">No results found</p>
-                            <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500 mt-1">Try adjusting your schema.</p>
+                        <div className="space-y-1">
+                            <p className="text-[11px] text-zinc-100 font-black tracking-[0.2em] uppercase">Target Null</p>
+                            <p className="text-[9px] font-black uppercase tracking-widest text-zinc-600">No matching nodes found in the current spectrum.</p>
                         </div>
                     </div>
                 ) : (
-                    <>
-                        <div className="grid grid-cols-1 gap-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
-                            {filteredOpportunities?.map((opp) => (
-                                <OpportunityCard key={opp._id} opportunity={opp} />
-                            ))}
-                        </div>
-                        
-                        {/* Loading / Pagination Indicator */}
-                        {filteredOpportunities?.length > 0 && (
-                            <div className="flex justify-center py-6 mt-4">
-                                <button className="flex items-center gap-2 px-6 py-2.5 rounded-xl border border-zinc-800 text-zinc-400 hover:text-zinc-100 hover:border-zinc-700 transition-all text-[10px] font-black bg-zinc-900 uppercase tracking-[0.2em]">
-                                    <span className="material-symbols-outlined text-[18px]">sync</span>
-                                    Load More
-                                </button>
-                            </div>
-                        )}
-                    </>
+                    <div className="grid grid-cols-1 gap-4 animate-in fade-in slide-in-from-bottom-2 duration-500">
+                        {filteredOpportunities?.map((opp) => (
+                            <OpportunityCard 
+                                key={opp._id} 
+                                opportunity={opp} 
+                                isSaved={savedIds.has(opp._id)}
+                                isApplied={appliedIds.has(opp._id)}
+                                onSaveToggle={(id) => toggleSaveMutation.mutate(id)}
+                            />
+                        ))}
+                    </div>
+                )}
+                
+                {filteredOpportunities?.length > 0 && (
+                    <div className="flex justify-center py-8">
+                        <div className="h-px bg-zinc-800 flex-1 mt-3"></div>
+                        <p className="px-6 text-[8px] font-black text-zinc-600 uppercase tracking-[0.5em]">End of Transmission</p>
+                        <div className="h-px bg-zinc-800 flex-1 mt-3"></div>
+                    </div>
                 )}
             </div>
         </div>
