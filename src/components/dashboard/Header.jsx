@@ -4,7 +4,7 @@ import { useAuthStore } from '../../stores/authStore';
 import NotificationDropdown from './NotificationDropdown';
 import UserDropdown from './UserDropdown';
 
-const Header = () => {
+const Header = ({ onMenuToggle }) => {
     const { user } = useAuthStore();
     const location = useLocation();
 
@@ -26,12 +26,20 @@ const Header = () => {
 
     return (
         <header className="flex items-center justify-between border-b border-zinc-800 dark:border-zinc-800 bg-zinc-950 dark:bg-zinc-950 px-6 py-3 shrink-0 sticky top-0 z-50">
-            <div className="flex items-center gap-8">
+            <div className="flex items-center gap-4 lg:gap-8">
+                {/* Mobile Menu Toggle */}
+                <button 
+                    onClick={onMenuToggle}
+                    className="lg:hidden size-9 flex items-center justify-center rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-primary transition-all active:scale-95"
+                >
+                    <span className="material-symbols-outlined text-[20px]">menu</span>
+                </button>
+
                 <Link to={user?.role === 'PUBLISHER' ? "/publisher/dashboard" : "/dashboard"} className="flex items-center gap-3 text-primary hover:opacity-90 transition-opacity">
                     <div className="size-8 flex items-center justify-center bg-primary/10 rounded-lg border border-primary/20">
                         <span className="material-symbols-outlined text-[20px]">explore</span>
                     </div>
-                    <h2 className="text-zinc-100 text-[13px] font-black uppercase tracking-[0.1em]">Opportunity Circle</h2>
+                    <h2 className="text-zinc-100 text-[13px] font-black uppercase tracking-[0.1em] hidden sm:block">Opportunity Circle</h2>
                 </Link>
                 
                 <nav className="hidden md:flex items-center gap-8">

@@ -79,6 +79,18 @@ export const publisherService = {
   updateProfile: async (profileData) => {
     const response = await api.patch('/publishers/profile', profileData);
     return response.data;
+  },
+
+  /**
+   * Upload an opportunity image
+   */
+  uploadOpportunityImage: async (formData) => {
+    const response = await api.post('/publishers/upload-image', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
   }
 };
 

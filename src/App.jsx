@@ -93,6 +93,7 @@ function App() {
             <Route element={<AppLayout />}>
               <Route path="/" element={<HomePage />} />
               <Route path="/opportunity/:id" element={<OpportunityDetail />} />
+              <Route path="/opportunities/:id" element={<OpportunityDetail />} />
               <Route path="/explore" element={<ExplorePage />} />
               {/* Add the /publishers route */}
               <Route path="/publishers" element={<PublishersPage />} />

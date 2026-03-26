@@ -18,10 +18,7 @@ export const useModerate = () => {
         if (!old) return old;
         return {
           ...old,
-          data: {
-            ...old.data,
-            opportunities: old.data.opportunities.filter(opp => opp._id !== id)
-          }
+          opportunities: old.opportunities ? old.opportunities.filter(opp => opp._id !== id) : []
         };
       });
 

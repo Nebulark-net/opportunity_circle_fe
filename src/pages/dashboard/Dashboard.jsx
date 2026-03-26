@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Header from '../../components/dashboard/Header';
 import Sidebar from '../../components/dashboard/Sidebar';
 import RightSidebar from '../../components/dashboard/RightSidebar';
@@ -6,6 +6,7 @@ import { Outlet, useLocation } from 'react-router-dom';
 
 const DashboardLayout = () => {
     const location = useLocation();
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     
     // Pages that should show the Right Sidebar (3-column layout)
     const showRightSidebar = location.pathname.includes('/feed') || 
@@ -22,9 +23,18 @@ const DashboardLayout = () => {
 
     return (
         <div className="relative flex h-screen w-full flex-col overflow-hidden text-zinc-100 bg-zinc-950 font-display antialiased">
-            <Header />
+            <Header onMenuToggle={() => setIsSidebarOpen(!isSidebarOpen)} />
             <div className="flex flex-1 overflow-hidden relative">
-                <Sidebar />
+                {/* Mobile Sidebar Backdrop */}
+                {isSidebarOpen && (
+                    <div 
+                        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] lg:hidden transition-opacity duration-300"
+                        onClick={() => setIsSidebarOpen(false)}
+                    />
+                )}
+                
+                <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
+                
                 <main className={`flex-1 overflow-y-auto bg-zinc-950 custom-scrollbar ${isCenteredPage ? 'flex flex-col' : ''}`}>
                     <div className={isCenteredPage ? "w-full max-w-7xl mx-auto" : "w-full"}>
                         <Outlet />
