@@ -102,6 +102,7 @@ function App() {
             <Route element={<AuthLayout />}>
               <Route path="/login" element={<LoginPage />} />
               <Route path="/register" element={<RegisterPage />} />
+              <Route path="/signup" element={<Navigate replace to="/register" />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/forgot-password-confirmation" element={<ForgotPasswordConfirmation />} />
               <Route path="/reset-password" element={<ResetPassword />} />

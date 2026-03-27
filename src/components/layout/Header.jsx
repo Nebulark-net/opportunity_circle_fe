@@ -35,7 +35,7 @@ const Header = () => {
                             <Link to="/login" className="px-5 py-2 text-sm font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-surface-dark rounded-lg transition-all">
                                 Login
                             </Link>
-                            <Link to="/signup" className="px-5 py-2.5 bg-primary hover:bg-primary/90 text-white text-sm font-bold rounded-lg shadow-lg shadow-primary/20 transition-all">
+                            <Link to="/register" className="px-5 py-2.5 bg-primary hover:bg-primary/90 text-white text-sm font-bold rounded-lg shadow-lg shadow-primary/20 transition-all">
                                 Sign Up
                             </Link>
                         </>

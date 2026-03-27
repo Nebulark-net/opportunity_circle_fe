@@ -33,7 +33,7 @@ const AuthButtons = () => {
         Sign In
       </Link>
       <Link 
-        to="/signup" 
+        to="/register" 
         className="btn-primary text-sm py-1.5 px-4 shadow-sm active:scale-95 transition-all"
       >
         Get Started
