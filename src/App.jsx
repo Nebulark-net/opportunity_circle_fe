@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'sonner';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -85,9 +85,15 @@ function PrivateRoute({ children, role }) {
 }
 
 function App() {
+  useEffect(() => {
+    const root = window.document.documentElement;
+    root.classList.add('dark');
+    root.style.colorScheme = 'dark';
+  }, []);
+
   return (
     <>
-      <Toaster position="bottom-right" richColors />
+      <Toaster position="bottom-right" richColors theme="dark" />
       <Router>
         <QueryClientProvider client={queryClient}>
           <Routes>

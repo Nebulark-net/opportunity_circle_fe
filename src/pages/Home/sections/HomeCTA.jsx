@@ -6,19 +6,19 @@ const HomeCTA = () => {
   return (
     <section className="py-20">
       <div className="max-w-4xl mx-auto px-4 text-center">
-        <div className="bg-gradient-to-br from-primary/10 to-accent-teal/10 rounded-3xl p-8 md:p-12 border border-primary/10">
-          <h2 className="text-3xl md:text-4xl font-bold text-zinc-900 dark:text-white mb-6">
+        <div className="rounded-[28px] border border-primary/15 p-8 md:p-12 bg-[linear-gradient(135deg,rgba(19,164,236,0.18),rgba(29,78,216,0.12))] shadow-hfas-lg">
+          <h2 className="mb-6 text-3xl font-bold text-off-white md:text-4xl">
             Ready to find your next milestone?
           </h2>
-          <p className="text-lg text-zinc-600 dark:text-zinc-400 mb-8 max-w-xl mx-auto">
+          <p className="mx-auto mb-8 max-w-xl text-lg text-accent-muted">
             Join thousands of students and professionals finding their dream opportunities every day.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link to="/explore" className="btn-primary w-full sm:w-auto flex items-center justify-center gap-2">
+            <Link to="/explore" className="btn-primary w-full sm:w-auto">
               Start Searching
               <ArrowRight size={18} />
             </Link>
-            <Link to="/publishers" className="w-full sm:w-auto px-6 py-2 font-semibold text-zinc-700 dark:text-zinc-300 hover:text-primary transition-colors">
+            <Link to="/publishers" className="w-full sm:w-auto px-6 py-3 text-sm font-bold text-light-gray hover:text-primary transition-colors">
               Are you a publisher?
             </Link>
           </div>

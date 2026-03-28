@@ -6,7 +6,7 @@ import MobileNav from '../components/layout/MobileNav';
 
 const PublicLayout = () => {
   return (
-    <div className="min-h-screen flex flex-col bg-background-light dark:bg-background-dark">
+    <div className="min-h-screen flex flex-col bg-background-dark text-off-white">
       <Header />
       <MobileNav />
       <main className="flex-1 flex flex-col">
