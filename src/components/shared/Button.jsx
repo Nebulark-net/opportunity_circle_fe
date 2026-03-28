@@ -1,13 +1,13 @@
 import React from 'react';
 
 const Button = ({ children, variant = 'primary', className = '', isLoading, ...props }) => {
-  const baseStyle = 'font-semibold py-2 px-4 rounded-button transition-all active:scale-95 disabled:opacity-50 disabled:pointer-events-none flex items-center justify-center';
+  const baseStyle = 'inline-flex items-center justify-center gap-2 rounded-button px-5 py-3 text-xs font-black uppercase tracking-[0.2em] transition-all active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none';
   const variants = {
-    primary: 'bg-primary text-white shadow-md hover:opacity-90',
-    secondary: 'bg-surface-dark/10 dark:bg-surface-dark text-slate-900 dark:text-white hover:bg-surface-dark/20 dark:hover:bg-slate-700',
-    ghost: 'bg-transparent hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300',
-    outline: 'border-2 border-primary text-primary hover:bg-primary/10',
-    danger: 'bg-red-500 text-white hover:bg-red-600',
+    primary: 'bg-primary text-white shadow-hfas-teal hover:bg-primary/90',
+    secondary: 'border border-border-dark bg-surface-dark text-off-white hover:border-primary/35 hover:text-primary hover:bg-surface-dark-border/40',
+    ghost: 'bg-transparent text-light-gray hover:bg-surface-dark-border/40 hover:text-off-white',
+    outline: 'border border-primary/35 text-primary hover:bg-primary/10',
+    danger: 'bg-red-500/90 text-white hover:bg-red-500',
   };
 
   return (

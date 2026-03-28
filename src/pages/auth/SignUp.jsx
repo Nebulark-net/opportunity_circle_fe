@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useAuthStore } from '../../stores/authStore';
 import { authService } from '../../services/auth.service';
+import { getPostAuthRedirect } from '../../utils/authRouting';
 
 const signupSchema = z.object({
   fullName: z.string().min(2, 'Name must be at least 2 characters'),
@@ -22,9 +23,9 @@ const SignUp = () => {
   const [showPassword, setShowPassword] = useState(false);
   
   const {
+    control,
     register,
     handleSubmit,
-    watch,
     formState: { errors, isSubmitting },
   } = useForm({
     resolver: zodResolver(signupSchema),
@@ -33,7 +34,7 @@ const SignUp = () => {
     },
   });
 
-  const role = watch('role');
+  const role = useWatch({ control, name: 'role' });
 
   const handleOAuthRedirect = (provider) => {
     window.location.href = `${import.meta.env.VITE_API_URL}/auth/${provider}?role=${role}`;
@@ -46,12 +47,7 @@ const SignUp = () => {
       
       login(user, accessToken, refreshToken);
       toast.success('Registration successful!');
-
-      if (user.role === 'SEEKER') {
-        navigate('/onboarding');
-      } else {
-        navigate('/publisher/dashboard');
-      }
+      navigate(getPostAuthRedirect(user), { replace: true });
     } catch (error) {
       toast.error(error.response?.data?.message || 'Registration failed');
     }

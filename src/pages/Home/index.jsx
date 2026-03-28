@@ -4,13 +4,10 @@ import SearchSection from './sections/SearchSection';
 import FeaturedSection from './sections/FeaturedSection';
 import HomeCTA from './sections/HomeCTA';
 import ValueProps from './sections/ValueProps';
-import Footer from '../../components/layout/Footer';
-import Header from '../../components/layout/Header';
 
 const HomePage = () => {
   return (
-    <div className="bg-zinc-50 dark:bg-zinc-950 font-display text-zinc-900 dark:text-zinc-100 antialiased">
-        
+    <div className="bg-background-dark font-display text-off-white antialiased">
         <main className="flex-1">
             <Hero />
             <SearchSection />
@@ -18,7 +15,6 @@ const HomePage = () => {
             <ValueProps />
             <HomeCTA />
         </main>
-        
     </div>
   );
 };

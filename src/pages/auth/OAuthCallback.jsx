@@ -2,12 +2,12 @@ import React, { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useAuthStore } from '../../stores/authStore';
-import api from '../../lib/api';
+import { authService } from '../../services/auth.service';
+import { getPostAuthRedirect } from '../../utils/authRouting';
 
 const OAuthCallback = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const setTokens = useAuthStore((state) => state.setTokens);
   const login = useAuthStore((state) => state.login);
 
   useEffect(() => {
@@ -16,43 +16,38 @@ const OAuthCallback = () => {
       const refreshToken = searchParams.get('refreshToken');
       const pendingRole = searchParams.get('pendingRole') === 'true';
 
+      window.history.replaceState({}, document.title, window.location.pathname);
+
       if (token && refreshToken) {
         try {
-          // Set tokens first to authorize subsequent requests
-          setTokens(token, refreshToken);
-
-          // Fetch user profile to hydrate store
-          const response = await api.get('/auth/me');
-          const user = response.data.data.user;
+          const user = await authService.getCurrentUser({
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
 
           login(user, token, refreshToken);
           
           toast.success('Successfully logged in!');
-          
-          if (pendingRole) {
-            navigate('/oauth-role-selection');
-          } else if (user.role === 'SEEKER' && !user.onboardingCompleted) {
-            navigate('/onboarding');
-          } else if (user.role === 'PUBLISHER') {
-            navigate('/publisher/dashboard');
-          } else if (user.role === 'SEEKER') {
-            navigate('/dashboard/feed');
-          } else {
-            navigate('/dashboard');
-          }
+
+          const nextPath = pendingRole || !user?.role
+            ? '/oauth-role-selection'
+            : getPostAuthRedirect(user);
+
+          navigate(nextPath, { replace: true });
         } catch (error) {
           console.error('OAuth profile fetch failed:', error);
           toast.error('Failed to complete login. Please try again.');
-          navigate('/login');
+          navigate('/login', { replace: true });
         }
       } else {
         toast.error('Authentication failed. No tokens received.');
-        navigate('/login');
+        navigate('/login', { replace: true });
       }
     };
 
     handleCallback();
-  }, [searchParams, navigate, setTokens, login]);
+  }, [searchParams, navigate, login]);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">

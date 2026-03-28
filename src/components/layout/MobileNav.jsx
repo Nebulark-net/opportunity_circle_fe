@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
-import { NavLink } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import useLayoutStore from '../../stores/layoutStore';
 
 const MobileNav = () => {
@@ -23,7 +23,7 @@ const MobileNav = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 0.5 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-40 bg-black"
+            className="fixed inset-0 z-40 bg-black/70 backdrop-blur-sm"
             onClick={closeMobileMenu}
           />
 
@@ -33,38 +33,45 @@ const MobileNav = () => {
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="fixed inset-y-0 right-0 z-50 w-64 bg-white dark:bg-surface-dark shadow-xl"
+            className="fixed inset-y-0 right-0 z-50 w-72 border-l border-border-dark bg-surface-dark/95 shadow-hfas-lg backdrop-blur-xl"
           >
-            <div className="flex items-center justify-between p-4 border-b border-slate-200 dark:border-border-dark">
-              <span className="text-lg font-bold text-primary">Menu</span>
+            <div className="flex items-center justify-between border-b border-border-dark/70 p-5">
+              <div className="flex flex-col">
+                <span className="text-[10px] font-black uppercase tracking-[0.22em] text-light-gray">Navigation</span>
+                <span className="text-lg font-black text-off-white">Menu</span>
+              </div>
               <button
                 onClick={closeMobileMenu}
-                className="p-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/10 rounded-full"
+                className="rounded-xl border border-border-dark bg-background-dark p-2 text-light-gray hover:border-primary/35 hover:text-off-white"
               >
                 <X size={24} />
               </button>
             </div>
 
-            <nav className="p-4 space-y-4">
+            <nav className="space-y-4 p-5">
               {navItems.map((item) => (
                 <NavLink
                   key={item.name}
                   to={item.path}
                   onClick={closeMobileMenu}
                   className={({ isActive }) =>
-                    `block px-4 py-2 rounded-lg text-lg font-medium transition-colors ${
+                    `block rounded-xl px-4 py-3 text-sm font-black uppercase tracking-[0.18em] transition-colors ${
                       isActive
                         ? 'bg-primary/10 text-primary'
-                        : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/5'
+                        : 'text-light-gray hover:bg-background-dark/60 hover:text-off-white'
                     }`
                   }
                 >
                   {item.name}
                 </NavLink>
               ))}
-              <div className="pt-4 border-t border-slate-200 dark:border-border-dark space-y-3">
-                <button className="w-full btn-secondary">Sign In</button>
-                <button className="w-full btn-primary">Sign Up</button>
+              <div className="space-y-3 border-t border-border-dark/70 pt-4">
+                <Link to="/login" onClick={closeMobileMenu} className="w-full btn-secondary">
+                  Sign In
+                </Link>
+                <Link to="/register" onClick={closeMobileMenu} className="w-full btn-primary">
+                  Sign Up
+                </Link>
               </div>
             </nav>
           </motion.div>

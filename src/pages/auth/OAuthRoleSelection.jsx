@@ -1,4 +1,13 @@
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import { Navigate, useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
+import api from '../../lib/api';
+import { useAuthStore } from '../../stores/authStore';
+import { extractUserFromResponse } from '../../utils/apiResponse';
+import { getPostAuthRedirect } from '../../utils/authRouting';
+
+const MotionDiv = motion.div;
 
 const OAuthRoleSelection = () => {
   const navigate = useNavigate();
@@ -6,20 +15,23 @@ const OAuthRoleSelection = () => {
   const [selectedRole, setSelectedRole] = useState('SEEKER');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (user.role) {
+    return <Navigate to={getPostAuthRedirect(user)} replace />;
+  }
+
   const handleSubmit = async () => {
     setIsSubmitting(true);
     try {
       const response = await api.patch('/auth/me/role', { role: selectedRole });
-      const updatedUser = response.data.data;
+      const updatedUser = extractUserFromResponse(response);
       
       updateProfile(updatedUser);
       toast.success(`Welcome aboard! You are now set as a ${selectedRole.toLowerCase()}.`);
-
-      if (selectedRole === 'SEEKER') {
-        navigate('/onboarding');
-      } else {
-        navigate('/publisher/dashboard');
-      }
+      navigate(getPostAuthRedirect(updatedUser), { replace: true });
     } catch (error) {
       toast.error(error.response?.data?.message || 'Failed to finalize setup');
     } finally {
@@ -35,7 +47,7 @@ const OAuthRoleSelection = () => {
             <div className="absolute bottom-[20%] right-[10%] w-[40vw] h-[40vw] rounded-full bg-primary/5 blur-[120px]"></div>
         </div>
 
-        <motion.div 
+        <MotionDiv 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="z-10 w-full max-w-2xl bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 p-10 rounded-[32px] shadow-2xl backdrop-blur-xl text-center"
@@ -95,7 +107,7 @@ const OAuthRoleSelection = () => {
             >
                 {isSubmitting ? 'Initalizing Environment...' : 'Finish Environment Setup'}
             </button>
-        </motion.div>
+        </MotionDiv>
     </div>
   );
 };

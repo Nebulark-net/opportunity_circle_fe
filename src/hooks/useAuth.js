@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import api from '../lib/api';
+import { authService } from '../services/auth.service';
 
 export const useAuth = () => {
   const [user, setUser] = useState(null);
@@ -8,9 +8,9 @@ export const useAuth = () => {
   useEffect(() => {
     const checkUser = async () => {
       try {
-        const { data } = await api.get('/auth/me');
-        setUser(data);
-      } catch (error) {
+        const currentUser = await authService.getCurrentUser();
+        setUser(currentUser);
+      } catch {
         setUser(null);
       } finally {
         setLoading(false);
@@ -20,17 +20,17 @@ export const useAuth = () => {
   }, []);
 
   const login = async (credentials) => {
-    const { data } = await api.post('/auth/login', credentials);
-    setUser(data);
+    const response = await authService.login(credentials);
+    setUser(response.data?.user ?? response.user ?? null);
   };
 
   const register = async (userData) => {
-    const { data } = await api.post('/auth/register', userData);
-    setUser(data);
+    const response = await authService.register(userData);
+    setUser(response.data?.user ?? response.user ?? null);
   };
 
   const logout = async () => {
-    await api.post('/auth/logout');
+    await authService.logout();
     setUser(null);
   };
 

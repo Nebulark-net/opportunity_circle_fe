@@ -5,9 +5,9 @@ import Footer from '../components/layout/Footer';
 
 const AppLayout = () => {
     return (
-        <div className="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 antialiased min-h-screen flex flex-col">
+        <div className="min-h-screen flex flex-col bg-background-dark font-display text-off-white antialiased">
             <Header />
-            <main className="flex-1 flex items-center justify-center">
+            <main className="flex-1 flex">
                 <Outlet />
             </main>
             <Footer />

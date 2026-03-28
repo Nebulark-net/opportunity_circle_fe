@@ -1,4 +1,5 @@
 import api from '../lib/api';
+import { extractUserFromResponse } from '../utils/apiResponse';
 
 export const authService = {
   login: async (credentials) => {
@@ -14,6 +15,11 @@ export const authService = {
   logout: async () => {
     const response = await api.post('/auth/logout');
     return response.data;
+  },
+
+  getCurrentUser: async (config = {}) => {
+    const response = await api.get('/auth/me', config);
+    return extractUserFromResponse(response);
   },
 
   refreshToken: async (refreshToken) => {

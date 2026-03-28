@@ -40,18 +40,30 @@ const Feed = ({ type = 'all' }) => {
     const queryClient = useQueryClient();
     const [educationLevel, setEducationLevel] = React.useState('all');
     const [fundingFilter, setFundingFilter] = React.useState('all');
+    const [page, setPage] = React.useState(1);
+    const limit = 10;
 
     // Fetch Opportunities
-    const { data: opportunities, isLoading, error } = useQuery({
-        queryKey: ['opportunities', type, educationLevel, fundingFilter],
+    const { data: responseData, isLoading, error } = useQuery({
+        queryKey: ['opportunities', type, educationLevel, fundingFilter, page],
         queryFn: () => api.get('/opportunities', { 
             params: { 
                 type: type !== 'all' ? type : undefined,
                 educationLevel: educationLevel !== 'all' ? educationLevel : undefined,
-                fundingType: fundingFilter !== 'all' ? fundingFilter : undefined
+                fundingType: fundingFilter !== 'all' ? fundingFilter : undefined,
+                page,
+                limit
             } 
-        }).then(res => res.data.data.opportunities)
+        }).then(res => res.data.data)
     });
+
+    const opportunities = responseData?.opportunities || [];
+    const totalPages = responseData?.totalPages || 0;
+
+    // Reset page when filters change
+    React.useEffect(() => {
+        setPage(1);
+    }, [type, educationLevel, fundingFilter]);
 
     // Fetch User Context (Saved & Applied)
     const { data: savedItems } = useQuery({
@@ -109,7 +121,7 @@ const Feed = ({ type = 'all' }) => {
                                     : `${type.charAt(0) + type.slice(1).toLowerCase()} Nexus`}
                             </h1>
                             <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500 mt-1">
-                                {isLoading ? 'Scanning Spectrum...' : `${filteredOpportunities?.length || 0} active nodes calibrated`}
+                                {isLoading ? 'Scanning Spectrum...' : `${responseData?.totalCount || 0} active nodes calibrated`}
                             </p>
                         </div>
                         <div className="flex items-center gap-3">
@@ -199,7 +211,62 @@ const Feed = ({ type = 'all' }) => {
                     </div>
                 )}
                 
-                {filteredOpportunities?.length > 0 && (
+                {/* Pagination Controls */}
+                {totalPages > 1 && (
+                    <div className="flex items-center justify-center gap-2 py-8 border-t border-zinc-800/50 mt-4">
+                        <button
+                            onClick={() => {
+                                setPage(p => Math.max(1, p - 1));
+                                window.scrollTo({ top: 0, behavior: 'smooth' });
+                            }}
+                            disabled={page === 1}
+                            className="p-2 rounded-lg border border-zinc-800 disabled:opacity-30 hover:bg-zinc-900 text-zinc-400 transition-colors"
+                        >
+                            <span className="material-symbols-outlined">chevron_left</span>
+                        </button>
+                        
+                        <div className="flex items-center gap-1">
+                            {[...Array(totalPages)].map((_, i) => {
+                                const pageNum = i + 1;
+                                if (totalPages > 5) {
+                                    if (pageNum !== 1 && pageNum !== totalPages && Math.abs(pageNum - page) > 1) {
+                                        if (pageNum === 2 || pageNum === totalPages - 1) return <span key={pageNum} className="text-zinc-700 mx-1">...</span>;
+                                        return null;
+                                    }
+                                }
+                                return (
+                                    <button
+                                        key={pageNum}
+                                        onClick={() => {
+                                            setPage(pageNum);
+                                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                                        }}
+                                        className={`size-8 rounded-lg text-[10px] font-black transition-all ${
+                                            page === pageNum
+                                                ? 'bg-zinc-800 text-primary border border-zinc-700'
+                                                : 'text-zinc-500 hover:bg-zinc-900'
+                                        }`}
+                                    >
+                                        {pageNum}
+                                    </button>
+                                );
+                            })}
+                        </div>
+
+                        <button
+                            onClick={() => {
+                                setPage(p => Math.min(totalPages, p + 1));
+                                window.scrollTo({ top: 0, behavior: 'smooth' });
+                            }}
+                            disabled={page === totalPages}
+                            className="p-2 rounded-lg border border-zinc-800 disabled:opacity-30 hover:bg-zinc-900 text-zinc-400 transition-colors"
+                        >
+                            <span className="material-symbols-outlined">chevron_right</span>
+                        </button>
+                    </div>
+                )}
+
+                {filteredOpportunities?.length > 0 && page === totalPages && (
                     <div className="flex justify-center py-8">
                         <div className="h-px bg-zinc-800 flex-1 mt-3"></div>
                         <p className="px-6 text-[8px] font-black text-zinc-600 uppercase tracking-[0.5em]">End of Transmission</p>

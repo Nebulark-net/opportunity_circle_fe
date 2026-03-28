@@ -33,11 +33,11 @@ const Interests = ({ onContinue, onBack }) => {
 
         setIsSubmitting(true);
         try {
-            await syncStep2({ interests: selectedTypes });
+            await syncStep2(selectedTypes);
             updateData({ interests: selectedTypes });
             toast.success('Interests saved!');
             onContinue();
-        } catch (error) {
+        } catch {
             toast.error('Failed to save progress. Please try again.');
         } finally {
             setIsSubmitting(false);

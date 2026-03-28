@@ -2,11 +2,14 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../stores/authStore';
 import { motion, AnimatePresence } from 'framer-motion';
+import { logoutUser } from '../../utils/logout';
+
+const MotionDiv = motion.div;
 
 const UserDropdown = () => {
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef(null);
-    const { user, logout } = useAuthStore();
+    const { user } = useAuthStore();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -19,9 +22,9 @@ const UserDropdown = () => {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
-    const handleLogout = () => {
-        logout();
-        navigate('/login');
+    const handleLogout = async () => {
+        await logoutUser();
+        navigate('/login', { replace: true });
     };
 
     const menuItems = [
@@ -68,7 +71,7 @@ const UserDropdown = () => {
 
             <AnimatePresence>
                 {isOpen && (
-                    <motion.div 
+                    <MotionDiv 
                         initial={{ opacity: 0, scale: 0.95, y: 8 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.95, y: 8 }}
@@ -112,7 +115,7 @@ const UserDropdown = () => {
                                 <span className="text-[8px] font-black text-primary uppercase tracking-widest">Active</span>
                             </div>
                         </div>
-                    </motion.div>
+                    </MotionDiv>
                 )}
             </AnimatePresence>
         </div>

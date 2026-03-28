@@ -14,9 +14,9 @@ const OpportunityCard = ({ opportunity }) => {
   const displayTitle = typeof title === 'object' ? title.en : title;
 
   return (
-    <div className="card flex flex-col h-full group p-4 border border-zinc-200 dark:zinc-800 bg-white dark:bg-zinc-900 transition-all hover:shadow-lg hover:border-primary/30">
+    <div className="card flex h-full flex-col gap-4 p-4 group">
       {/* Image or Placeholder */}
-      <div className="relative aspect-[16/9] mb-4 overflow-hidden rounded-lg bg-zinc-100 dark:bg-zinc-800">
+      <div className="relative aspect-[16/9] overflow-hidden rounded-xl bg-background-dark">
         {imageUrl ? (
           <img 
             src={imageUrl} 
@@ -31,23 +31,23 @@ const OpportunityCard = ({ opportunity }) => {
         
         {/* Type Badge */}
         <div className="absolute top-2 left-2">
-           <span className="px-2 py-0.5 rounded-full bg-primary/90 text-white text-[10px] font-bold uppercase tracking-wider backdrop-blur-sm">
+           <span className="rounded-full border border-primary/25 bg-primary/10 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-primary backdrop-blur-sm">
              {type}
            </span>
         </div>
 
         {/* Bookmark Button */}
-        <button className="absolute top-2 right-2 p-1.5 rounded-full bg-white/80 dark:bg-zinc-900/80 text-zinc-500 hover:text-primary backdrop-blur-sm transition-colors">
+        <button className="absolute top-2 right-2 rounded-full border border-border-dark/70 bg-background-dark/80 p-1.5 text-light-gray hover:text-primary backdrop-blur-sm transition-colors">
           <Bookmark size={14} />
         </button>
       </div>
 
       <div className="flex-1 flex flex-col">
-        <h3 className="text-base font-bold text-zinc-900 dark:text-white mb-1 line-clamp-1 group-hover:text-primary transition-colors">
+        <h3 className="mb-1 line-clamp-1 text-lg font-bold text-off-white group-hover:text-primary transition-colors">
           {displayTitle}
         </h3>
         <div className="flex items-center gap-1.5 mb-4">
-          <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
+          <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-light-gray">
             {organizationName}
           </p>
           {isVerified && (
@@ -56,11 +56,11 @@ const OpportunityCard = ({ opportunity }) => {
         </div>
 
         <div className="mt-auto space-y-2">
-          <div className="flex items-center gap-2 text-xs text-zinc-500 dark:text-zinc-400">
+          <div className="flex items-center gap-2 text-xs text-light-gray">
             <MapPin size={14} className="text-primary" />
             <span>{location}</span>
           </div>
-          <div className="flex items-center gap-2 text-xs text-zinc-500 dark:text-zinc-400">
+          <div className="flex items-center gap-2 text-xs text-light-gray">
             <Calendar size={14} className="text-primary" />
             <span>Deadline: {new Date(deadline).toLocaleDateString()}</span>
           </div>
@@ -68,7 +68,7 @@ const OpportunityCard = ({ opportunity }) => {
 
         <Link 
           to={`/opportunities/${opportunityId}`}
-          className="mt-4 flex items-center justify-between py-2 text-xs font-bold text-primary hover:text-primary/80 transition-all border-t border-zinc-100 dark:zinc-800 pt-4"
+          className="mt-4 flex items-center justify-between border-t border-border-dark/70 pt-4 text-xs font-black uppercase tracking-[0.18em] text-primary hover:text-primary/80 transition-all"
         >
           <span>View Details</span>
           <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
