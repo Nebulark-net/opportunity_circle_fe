@@ -3,6 +3,7 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useAuthStore } from '../../stores/authStore';
 import { authService } from '../../services/auth.service';
+import { getPostAuthRedirect } from '../../utils/authRouting';
 
 const RegisterPage = () => {
     const [searchParams] = useSearchParams();
@@ -33,12 +34,7 @@ const RegisterPage = () => {
             setAuthData(user, accessToken, refreshToken);
 
             toast.success('Account created successfully!');
-
-            if (role === 'PUBLISHER') {
-                navigate('/publisher/dashboard');
-            } else {
-                navigate('/onboarding');
-            }
+            navigate(getPostAuthRedirect(user), { replace: true });
         } catch (error) {
             const message = error.response?.data?.message || 'Failed to create account. Please try again.';
             toast.error(message);

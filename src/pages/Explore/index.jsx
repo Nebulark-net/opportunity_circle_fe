@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import useFilterStore from '../../stores/filterStore';
 import { useOpportunities } from '../../hooks/useOpportunities';
 import ExploreHeader from './components/ExploreHeader';
@@ -6,20 +7,45 @@ import OpportunityGrid from './components/OpportunityGrid';
 import { CardGridSkeleton } from '../../components/loaders/CardSkeleton';
 import EmptyState from '../../components/feedback/EmptyState';
 import MaxContainer from '../../components/layout/MaxContainer';
+import { buildExploreSearchParams, parseExploreSearchParams } from '../../utils/exploreFilters';
 
 const ExplorePage = () => {
-  const { searchQuery, filters, page, setPage, clearFilters } = useFilterStore();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const { searchQuery, filters, page, setPage, clearFilters, syncFromQuery } = useFilterStore();
+  const searchParamString = searchParams.toString();
+  const isApplyingUrlState = useRef(true);
   
   const { data, isLoading, error } = useOpportunities({
     search: searchQuery,
     type: filters.type,
     location: filters.location,
-    page: page,
-    limit: 12
+    educationLevel: filters.educationLevel,
+    fundingType: filters.fundingType,
+    page,
+    limit: 12,
   });
 
   const opportunities = data?.data?.opportunities || [];
   const totalPages = data?.data?.totalPages || 0;
+
+  useEffect(() => {
+    isApplyingUrlState.current = true;
+    syncFromQuery(parseExploreSearchParams(new URLSearchParams(searchParamString)));
+  }, [searchParamString, syncFromQuery]);
+
+  useEffect(() => {
+    if (isApplyingUrlState.current) {
+      isApplyingUrlState.current = false;
+      return;
+    }
+
+    const nextParams = buildExploreSearchParams({ searchQuery, filters, page });
+    const nextQueryString = nextParams.toString();
+
+    if (nextQueryString !== searchParamString) {
+      setSearchParams(nextParams, { replace: true });
+    }
+  }, [filters, page, searchParamString, searchQuery, setSearchParams]);
 
   // Scroll to top on page change
   useEffect(() => {

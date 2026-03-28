@@ -9,22 +9,16 @@ import { useAuthStore } from '../stores/authStore';
 import { useUIStore } from '../stores/uiStore';
 import NotificationCenter from '../components/layout/NotificationCenter';
 import MaxContainer from '../components/layout/MaxContainer';
-import authService from '../services/auth.service';
+import { logoutUser } from '../utils/logout';
 
 const MainLayout = () => {
-  const { user, logout } = useAuthStore();
+  const { user } = useAuthStore();
   const { isSidebarOpen, toggleSidebar } = useUIStore();
   const location = useLocation();
 
   const handleLogout = async () => {
-    try {
-      toggleSidebar();
-      await authService.logout();
-    } catch (error) {
-      console.error('Logout failed:', error);
-    } finally {
-      logout();
-    }
+    toggleSidebar();
+    await logoutUser();
   };
 
   const navigation = [

@@ -1,9 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAuthStore } from '../../stores/authStore';
+import { logoutUser } from '../../utils/logout';
 
 const AuthButtons = () => {
-  const { isAuthenticated, user, logout } = useAuthStore();
+  const { isAuthenticated, user } = useAuthStore();
 
   if (isAuthenticated) {
     return (
@@ -15,7 +16,7 @@ const AuthButtons = () => {
           {user?.fullName?.split(' ')[0]}
         </Link>
         <button 
-          onClick={logout}
+          onClick={logoutUser}
           className="text-xs font-bold text-red-500 hover:text-red-600 transition-colors uppercase tracking-wider"
         >
           Logout

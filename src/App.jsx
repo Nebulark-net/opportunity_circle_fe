@@ -26,6 +26,10 @@ import Profile from './pages/profile/Profile';
 import Settings from './pages/settings/Settings';
 import PublishersPage from './pages/Publishers/PublishersPage';
 import ExplorePage from './pages/Explore/index';
+import FAQ from './pages/FAQ';
+import NotFound from './pages/NotFound';
+import AuthFlowErrorBoundary from './components/auth/AuthFlowErrorBoundary';
+import { getPostAuthRedirect } from './utils/authRouting';
 
 // Dashboard Pages
 import Feed from './pages/dashboard/Feed';
@@ -73,10 +77,7 @@ function PrivateRoute({ children, role }) {
     
     if (userRole !== requiredRole) {
       console.warn(`Access Denied: Required ${requiredRole}, User has ${userRole}`);
-      // Redirect to appropriate dashboard based on actual role
-      if (userRole === 'PUBLISHER') return <Navigate to="/publisher/dashboard" />;
-      if (userRole === 'ADMIN') return <Navigate to="/admin/moderation" />;
-      return <Navigate to="/dashboard" />;
+      return <Navigate to={getPostAuthRedirect(user)} replace />;
     }
   }
 
@@ -95,8 +96,8 @@ function App() {
               <Route path="/opportunity/:id" element={<OpportunityDetail />} />
               <Route path="/opportunities/:id" element={<OpportunityDetail />} />
               <Route path="/explore" element={<ExplorePage />} />
-              {/* Add the /publishers route */}
               <Route path="/publishers" element={<PublishersPage />} />
+              <Route path="/help" element={<FAQ />} />
             </Route>
 
             <Route element={<AuthLayout />}>
@@ -106,9 +107,9 @@ function App() {
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/forgot-password-confirmation" element={<ForgotPasswordConfirmation />} />
               <Route path="/reset-password" element={<ResetPassword />} />
-              <Route path="/onboarding" element={<OnboardingFlow />} />
-              <Route path="/oauth-callback" element={<OAuthCallback />} />
-              <Route path="/oauth-role-selection" element={<OAuthRoleSelection />} />
+              <Route path="/onboarding" element={<AuthFlowErrorBoundary><OnboardingFlow /></AuthFlowErrorBoundary>} />
+              <Route path="/oauth-callback" element={<AuthFlowErrorBoundary><OAuthCallback /></AuthFlowErrorBoundary>} />
+              <Route path="/oauth-role-selection" element={<AuthFlowErrorBoundary><OAuthRoleSelection /></AuthFlowErrorBoundary>} />
             </Route>
 
             <Route
@@ -168,6 +169,8 @@ function App() {
               <Route path="profile" element={<Profile />} />
               <Route path="settings" element={<Settings />} />
             </Route>
+
+            <Route path="*" element={<NotFound />} />
 
           </Routes>
         </QueryClientProvider>

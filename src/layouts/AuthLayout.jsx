@@ -1,14 +1,23 @@
 import React from 'react';
-import { Outlet, Navigate, Link } from 'react-router-dom';
+import { Outlet, Navigate, Link, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../stores/authStore';
+import { getPostAuthRedirect, isAuthFlowPath } from '../utils/authRouting';
 
 const AuthLayout = () => {
+    const location = useLocation();
     const { isAuthenticated, user } = useAuthStore();
+    const isFlowRoute = isAuthFlowPath(location.pathname);
 
-    if (isAuthenticated) {
-        if (user?.role === 'PUBLISHER') return <Navigate to="/publisher/dashboard" replace />;
-        if (user?.role === 'ADMIN') return <Navigate to="/admin/moderation" replace />;
-        return <Navigate to="/dashboard" replace />;
+    if (isAuthenticated && user && !isFlowRoute) {
+        return <Navigate to={getPostAuthRedirect(user)} replace />;
+    }
+
+    if (isFlowRoute) {
+        return (
+            <div className="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen">
+                <Outlet />
+            </div>
+        );
     }
 
     return (

@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useAuthStore } from '../../stores/authStore';
 import { authService } from '../../services/auth.service';
+import { getPostAuthRedirect } from '../../utils/authRouting';
 
 const LoginPage = () => {
     const [email, setEmail] = useState('');
@@ -27,16 +28,7 @@ const LoginPage = () => {
             setAuthData(user, accessToken, refreshToken);
 
             toast.success('Successfully logged in!');
-
-            if (user.role === 'ADMIN') {
-                navigate('/admin/moderation');
-            } else if (user.role === 'PUBLISHER') {
-                navigate('/publisher/dashboard');
-            } else if (!user.onboardingCompleted) {
-                navigate('/onboarding');
-            } else {
-                navigate('/dashboard/feed');
-            }
+            navigate(getPostAuthRedirect(user), { replace: true });
         } catch (error) {
             const message = error.response?.data?.message || 'Failed to login. Please check your credentials.';
             toast.error(message);

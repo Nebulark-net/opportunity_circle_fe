@@ -8,9 +8,8 @@ const SearchSection = () => {
 
     const handleSearch = (e) => {
         e.preventDefault();
-        if (searchQuery.trim()) {
-            navigate('/explore');
-        }
+        const trimmedQuery = searchQuery.trim();
+        navigate(trimmedQuery ? `/explore?search=${encodeURIComponent(trimmedQuery)}` : '/explore');
     };
 
     return (

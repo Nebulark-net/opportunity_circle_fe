@@ -1,27 +1,33 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Navigate } from 'react-router-dom';
+import { useAuthStore } from '../../stores/authStore';
 import { useOnboardingStore } from '../../stores/onboardingStore';
 import Welcome from './Welcome';
 import Interests from './Interests';
 import Preferences from './Preferences';
+import { getPostAuthRedirect } from '../../utils/authRouting';
+
+const MotionDiv = motion.div;
 
 const OnboardingFlow = () => {
-  const { currentStep, setStep, syncStep3 } = useOnboardingStore();
+  const { currentStep, setStep } = useOnboardingStore();
   const { user } = useAuthStore();
-  const isPublisher = user?.role === 'PUBLISHER';
+
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (!user.role) {
+    return <Navigate to="/oauth-role-selection" replace />;
+  }
+
+  if (user.role === 'ADMIN' || user.role === 'PUBLISHER' || user.onboardingCompleted) {
+    return <Navigate to={getPostAuthRedirect(user)} replace />;
+  }
 
   const handleContinue = async () => {
-    if (isPublisher && currentStep === 1) {
-      // For publishers, we skip seeker steps and complete onboarding
-      try {
-        await syncStep3({ isPublisherOnboarding: true });
-        // Store will set step to 4 which we handle below
-      } catch (error) {
-        console.error('Publisher onboarding completion failed');
-      }
-    } else {
-      setStep(currentStep + 1);
-    }
+    setStep(currentStep + 1);
   };
 
   const handleBack = () => setStep(currentStep - 1);
@@ -29,7 +35,7 @@ const OnboardingFlow = () => {
   const renderStep = () => {
     // If onboarding is completed (step 4), redirect to dashboard
     if (currentStep >= 4) {
-      return <Navigate to={isPublisher ? "/publisher/dashboard" : "/dashboard/feed"} replace />;
+      return <Navigate to="/dashboard/feed" replace />;
     }
 
     switch (currentStep) {
@@ -47,7 +53,7 @@ const OnboardingFlow = () => {
   return (
     <div className="min-h-screen bg-background-light dark:bg-background-dark flex flex-col items-center justify-center p-4">
         <AnimatePresence mode="wait">
-            <motion.div
+            <MotionDiv
                 key={currentStep}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -55,7 +61,7 @@ const OnboardingFlow = () => {
                 transition={{ duration: 0.3 }}
             >
                 {renderStep()}
-            </motion.div>
+            </MotionDiv>
         </AnimatePresence>
     </div>
   );

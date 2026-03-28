@@ -21,6 +21,7 @@ import api from '../../lib/api';
 import { userService } from '../../services/user.service';
 import { useApply } from '../../hooks/useApply';
 import { useAuthStore } from '../../stores/authStore';
+import { sanitizeHtml } from '../../utils/sanitizeHtml';
 
 const OpportunityDetail = () => {
     const { id } = useParams();
@@ -125,6 +126,7 @@ const OpportunityDetail = () => {
     const displayTitle = typeof title === 'object' ? title.en : title;
     const displayDescription = typeof description === 'object' ? description.en : description;
     const displaySpecificReqs = typeof specificRequirements === 'object' ? specificRequirements.en : specificRequirements;
+    const sanitizedDescription = sanitizeHtml(displayDescription);
     
     const isPublisherOwner = user?.role === 'PUBLISHER' && opportunity.publisher?._id === user._id;
     const isAdmin = user?.role === 'ADMIN';
@@ -194,7 +196,7 @@ const OpportunityDetail = () => {
                                         <div className="w-8 h-1 bg-primary rounded-full"></div>
                                         About this Opportunity
                                     </h3>
-                                    <div className="text-zinc-400/90 text-sm md:text-base font-medium leading-relaxed space-y-6 prose prose-invert prose-p:leading-relaxed prose-headings:font-bold prose-headings:text-zinc-100 prose-a:text-primary max-w-none" dangerouslySetInnerHTML={{ __html: displayDescription }}></div>
+                                    <div className="text-zinc-400/90 text-sm md:text-base font-medium leading-relaxed space-y-6 prose prose-invert prose-p:leading-relaxed prose-headings:font-bold prose-headings:text-zinc-100 prose-a:text-primary max-w-none" dangerouslySetInnerHTML={{ __html: sanitizedDescription }}></div>
                                 </div>
 
                                 {/* Specific Requirements if available */}

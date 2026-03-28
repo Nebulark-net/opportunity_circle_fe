@@ -5,6 +5,7 @@ import { opportunitiesService } from '../../services/opportunities.service';
 import { useAuthStore } from '../../stores/authStore';
 import Skeleton from '../../components/loaders/Skeleton';
 import { toast } from 'sonner';
+import { sanitizeHtml } from '../../utils/sanitizeHtml';
 import { 
   MapPin, 
   School, 
@@ -62,6 +63,8 @@ const OpportunityDetail = () => {
 
   const opportunity = response.data;
   const isSaved = user?.savedItems?.includes(id);
+  const sanitizedDescription = sanitizeHtml(opportunity.description.en || opportunity.description);
+  const sanitizedRequirements = sanitizeHtml(opportunity.requirements?.en || opportunity.requirements);
 
   return (
     <div className="flex flex-col max-w-[1200px] w-full mx-auto gap-6 px-4 py-8">
@@ -115,12 +118,12 @@ const OpportunityDetail = () => {
               <h3 className="text-xl font-bold text-slate-900 dark:text-white border-b border-slate-200 dark:border-surface-dark-border pb-2 mb-4">
                 Description
               </h3>
-              <div dangerouslySetInnerHTML={{ __html: opportunity.description.en || opportunity.description }} />
+              <div dangerouslySetInnerHTML={{ __html: sanitizedDescription }} />
               
               {opportunity.requirements && (
                 <>
                   <h4 className="text-lg font-bold text-slate-900 dark:text-white mt-8 mb-4">Requirements</h4>
-                  <div dangerouslySetInnerHTML={{ __html: opportunity.requirements.en || opportunity.requirements }} />
+                  <div dangerouslySetInnerHTML={{ __html: sanitizedRequirements }} />
                 </>
               )}
             </div>
